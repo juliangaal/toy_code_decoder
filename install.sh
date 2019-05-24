@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e # exit on first fail
-sudo add-apt-repository universe
+sudo add-apt-repository -y universe
 sudo apt-get update -y
-sudo apt-get install git cmake libboost-all-dev 
+sudo apt-get install -y git cmake libboost-all-dev 
 
 loc=$PWD
 mkdir -p $HOME/install_shit
