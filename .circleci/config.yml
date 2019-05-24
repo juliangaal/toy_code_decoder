@@ -5,4 +5,9 @@ jobs:
       - image: ubuntu:16.04
     steps:
       - checkout
-      - run: bash install.sh
+      - run: 
+          name: Docker shit
+          command: apt-get update -y && apt-get install -y sudo
+      - run: 
+          name: Run Installation script
+          command: bash install.sh
