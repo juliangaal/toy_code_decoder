@@ -10,7 +10,7 @@ jobs:
           command: | 
             apt-get update -y
             apt-get install -y sudo
-            apt-get install software-properties-common
+            apt-get install -y software-properties-common
       - run: 
           name: Run Installation script
           command: bash install.sh
