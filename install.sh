@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e # exit on first fail
 sudo DEBIAN_FRONTEND=noninteractive add-apt-repository -y universe
-sudo apt-get update -y
+sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
 sudo apt-get install -y build-essential git cmake libboost-all-dev 
 
 loc=$PWD
