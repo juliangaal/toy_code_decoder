@@ -35,15 +35,9 @@ ToyDecoder::ToyDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : im
 }
 
 void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
-#if CV_MAJOR_VERSION < 3   // If you are using OpenCV 2
-    // Set up detector with params and detect blobs
-    cv::SimpleBlobDetector detector(this->params);
-    detector.detect(this->img, this->keypoints);
-#else
     // Set up detector with params and detect
     cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
     detector->detect(this->img, this->keypoints);
-#endif
 
     switch (mark) {
         case YES:
@@ -80,19 +74,16 @@ std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
     // partition again: red point is now in front: position 0
     std::stable_partition(this->orientation_line.begin(), this->orientation_line.end(),
                           [&](const auto &p) { return color::is_red(this->img, p); }); // ignore iterator
-    geo::to_cartesian(this->orientation_line[0].pt);
-    geo::to_cartesian(this->orientation_line[1].pt);
-    const auto &red_point = this->orientation_line[0].pt;
-    const auto &black_point = this->orientation_line[1].pt;
+    auto &red_point = this->orientation_line[0].pt;
+    auto &black_point = this->orientation_line[1].pt;
 
     // calculate vector that is spanned by red and black point
+    geo::to_cartesian(red_point);
+    geo::to_cartesian(black_point);
     auto vec = geo::connecting_vector(red_point, black_point);
-    // calculate absolute orientation
-    float orientation = std::atan(vec.y / vec.x) * 180.0 / M_PI;
-    // right hand rule: turn to left is negative, turn to right is positive
-    orientation *= -1;
+    // calculate absolute orientation, * -1 because of rotation in right hand rule
+    float orientation = (std::atan(vec.y / vec.x) * 180.0 / M_PI) * -1;
     float img_rotation = orientation;
-
     // It's not enough to just turn parallel (enough for orientation estimation),
     // but the red dot has to be to the right of the black one
     // therefore a manual flip is necessary, if following condition is met
