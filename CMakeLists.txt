@@ -14,24 +14,35 @@ find_package(Catch2 REQUIRED)
 enable_testing()
 
 set(EXE blob)
-add_executable(${EXE} src/blob.cpp)
+add_executable(${EXE} src/blob.cpp src/util.cpp)
 target_include_directories(${EXE} PRIVATE include)
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+target_compile_options(${EXE} PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
 target_link_libraries(${EXE}
         ${OpenCV_LIBS}
         ${Boost_SYSTEM_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}
         fmt::fmt)
 
+set(LIB toy_decoder)
+set(SOURCES src/toy_decoder.cpp src/util.cpp)
+set(HEADERS include/toy_decoder/toy_decoder.hpp include/toy_decoder/util.hpp)
+add_library(${LIB} ${SOURCES} ${HEADERS})
+target_include_directories(${LIB} PUBLIC include)
+target_compile_options(${LIB} PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+target_link_libraries(${LIB}
+        ${OpenCV_LIBS}
+        fmt::fmt)
+
 set(UNIT_TEST unit_test)
 add_executable(${UNIT_TEST} tests/test.cpp)
 add_test(NAME ${UNIT_TEST} COMMAND ${UNIT_TEST})
 target_include_directories(${UNIT_TEST} PRIVATE include)
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+target_compile_options(${UNIT_TEST} PRIVATE -Wall -Wextra -pedantic -Werror)
 target_link_libraries(${UNIT_TEST}
         ${OpenCV_LIBS}
         fmt::fmt
-        Catch2::Catch2)
+        Catch2::Catch2
+        ${LIB})
 
 message(STATUS "AUTO_TEST is ${AUTO_TEST}")
 if(AUTO_TEST) 
