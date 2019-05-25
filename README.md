@@ -1,5 +1,5 @@
-# toy code decoder
-rotation invariant toy decoder for codes in this style:
+# toy decoder
+rotation invariant toy decoder for codes in this style:  
 
 <p float="left">
   <img src="./pics/code_diff_sizes.jpg" width="200" />
