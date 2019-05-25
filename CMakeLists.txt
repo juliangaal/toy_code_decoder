@@ -1,33 +1,33 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 project(hwcpp)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenCV REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 enable_testing()
 
-add_executable(blob src/blob.cpp)
-target_link_libraries(blob 
-    ${OpenCV_LIBS} 
-    ${Boost_SYSTEM_LIBRARY} 
-    ${Boost_FILESYSTEM_LIBRARY} 
-    fmt::fmt)
-
-add_executable(test_rot test/test.cpp)
-target_link_libraries(blob
+set(EXE blob)
+add_executable(${EXE} src/blob.cpp)
+target_include_directories(${EXE} PRIVATE include)
+target_link_libraries(${EXE}
         ${OpenCV_LIBS}
         ${Boost_SYSTEM_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}
+        Eigen3::Eigen
         fmt::fmt)
 
 set(UNIT_TEST test_rot)
+add_executable(${UNIT_TEST} tests/test.cpp)
 add_test(NAME ${UNIT_TEST} COMMAND ${UNIT_TEST})
+target_include_directories(${UNIT_TEST} PRIVATE include)
+target_link_libraries(${UNIT_TEST} ${OpenCV_LIBS} fmt::fmt)
 add_custom_command(
-     TARGET ${UNIT_TEST}
-     COMMENT "Run tests"
-     POST_BUILD 
-     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failures
+        TARGET ${UNIT_TEST}
+        COMMENT "Run tests"
+        POST_BUILD
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${CMAKE_CTEST_COMMAND} --verbose
 )
