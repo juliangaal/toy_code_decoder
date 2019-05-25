@@ -1,3 +1,10 @@
+//
+// Created by julian on 5/24/19.
+//
+
+#ifndef HWCPP_MACROS_HPP
+#define HWCPP_MACROS_HPP
+
 // adapted from http://bastian.rieck.me/blog/posts/2017/simple_unit_tests/
 #include <stdexcept>
 #include <string>
@@ -24,10 +31,12 @@
                               + std::to_string( __LINE__ )          \
                               + std::string( " in " )               \
                               + std::string( __PRETTY_FUNCTION__ )  \
-                              + std::string( ": Wanted " )                 \
+                              + std::string( ": Got " )                 \
                               + std::to_string( ( x ) )             \
-                              + std::string( ", Got " )               \
+                              + std::string( ", Wanted " )               \
                               + std::to_string( ( y ) )             \
     );                                                              \
   }                                                                 \
 }
+
+#endif //HWCPP_MACROS_HPP

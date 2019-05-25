@@ -15,6 +15,14 @@ cmake ..
 make -j4
 sudo make install
 
+cd $HOME/install_stuff
+if [ ! -d "Catch2" ]; then
+  git clone https://github.com/catchorg/Catch2.git
+fi
+cd Catch2
+cmake -Bbuild -H. -DBUILD_TESTING=OFF
+sudo cmake --build build/ --target install
+
 # install opencv
 cd $HOME/install_stuff
 sudo apt-get install -y gcc g++ gtk2.0 ffmpeg python3-numpy python-numpy
@@ -25,7 +33,7 @@ if [ ! -d "opencv" ]; then
   git clone https://github.com/opencv/opencv.git
 fi
 cd opencv && mkdir -p build && cd build
-cmake ..
+cmake -D WITH_EIGEN=OFF ..
 make -j4 
 sudo make install
 
