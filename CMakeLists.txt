@@ -7,7 +7,6 @@ set(AUTO_TEST OFF CACHE BOOL "Enables Tests Post build")
 find_package(OpenCV REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(Catch2 REQUIRED)
 
 enable_testing()
