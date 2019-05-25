@@ -10,4 +10,4 @@
   * binary representation: big blobs represent 1s, small blobs represent 0s
   * Once properly rotated (red blob in the east), blobs above middle line represent x coordinate, below y coordinate
 
-Build [![CircleCI](https://circleci.com/gh/juliangaal/hw/tree/master.svg?style=svg)](https://circleci.com/gh/juliangaal/hw/tree/master) for ubuntu 16.04 and 18.04, run the [installation script](./install.sh) to install all necessary components
+Build [![CircleCI](https://circleci.com/gh/juliangaal/hw/tree/master.svg?style=svg)](https://circleci.com/gh/juliangaal/hw/tree/master) for ubuntu 16.04, run the [installation script](./install.sh) to install all necessary components
