@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    // Print keypoint information
+    // Print keypoint information and CONVERT TO CARTESIAN
     for (auto &point: keypoints) {
         auto color = im.at<cv::Vec3b>(point.pt);
         fmt::print("> keypoint\n  - pos  : x: {0:0.1f} y: {1:0.1f}\n", point.pt.x, point.pt.y);
@@ -99,14 +99,23 @@ int main(int argc, char **argv) {
 
     // red point is now in front: position 0
     auto _ = std::stable_partition(line.begin(), line.end(), [&](const auto &p) { return color::is_red(im, p); });
+    geo::to_cartesian(line[0].pt);
+    geo::to_cartesian(line[1].pt);
     const auto &red_point = line[0].pt;
+    fmt::print("Found red point ({0:0.1f},{1:0.1f})\n", red_point.x, red_point.y);
     const auto &black_point = line[1].pt;
+    fmt::print("Found black point ({0:0.1f},{1:0.1f})\n", black_point.x, black_point.y);
 
     auto vec = geo::connecting_vector(red_point, black_point);
     float rotation = std::atan(vec.y / vec.x) * 180.0 / M_PI;
-    // TODO adjust rotation in relation to north/south dot
+    rotation *= -1;
+    // It's not enough to just turn prallel, the red dot has to be to the right of the black one
+    // therefore a manual flip is necessary, if following condition is met
+    if (red_point.x < black_point.x) {
+        rotation < 0 ? rotation -= 180.0 : rotation += 180;
+    }
 
-    if (red_point.y < black_point.y) rotation *= -1;
+    // TODO adjust rotation in relation to north/south dot
     // TODO edge case parallel
 
     // apply rotation to image
@@ -124,7 +133,6 @@ int main(int argc, char **argv) {
 
     // apply rotation to line
     for (auto &keypoint: line) {
-        geo::to_cartesian(keypoint.pt);
         fmt::print("> rotated ({0:0.1f},{1:0.1f})", keypoint.pt.x, keypoint.pt.y);
         calc::rotate(keypoint.pt, units::Degrees(rotation));
         fmt::print(" to ({0:0.1f},{1:0.1f})\n", keypoint.pt.x, keypoint.pt.y);
@@ -132,6 +140,7 @@ int main(int argc, char **argv) {
 
     // TODO
     // [x] separate with std::partition in bits to decode
+    // [ ] catch erroneuos rotations
     // [ ] decode bits: color/size?!
     const auto separator_it = std::partition(keypoints.begin(), keypoints.end(), [&](const auto &p) {
         // line is rotated => any points below/above points below to either bits
@@ -157,6 +166,8 @@ int main(int argc, char **argv) {
 
     // Show blobs
     cv::imshow("keypoints", im_with_keypoints);
+    // Show rotated image
+    cv::imshow("rotated image", im);
     cv::waitKey(0);
 
     return 0;

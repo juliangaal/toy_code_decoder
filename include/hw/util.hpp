@@ -101,8 +101,8 @@ namespace geo {
 using UnitVector = cv::Point2f;
 
 geo::UnitVector connecting_vector(const cv::Point2f &a, const cv::Point2f &b) {
-    float x = std::abs(a.x - b.x);
-    float y = std::abs(a.y - b.y);
+    float x = b.x - a.x;
+    float y = b.y - a.y;
     float length = std::sqrt(std::pow(x, 2) + std::pow(y, 2));
     return geo::UnitVector{x / length, y / length};
 }

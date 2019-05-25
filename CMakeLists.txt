@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 project(hwcpp)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(AUTO_TEST OFF CACHE BOOL "Enables Tests Post build")
 
 find_package(OpenCV REQUIRED)
