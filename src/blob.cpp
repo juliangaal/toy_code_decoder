@@ -83,7 +83,9 @@ int main(int argc, char **argv) {
     auto img_rot_matrix = cv::getRotationMatrix2D(shape, rotation, 1);
     cv::warpAffine(im, im, img_rot_matrix, cv::Size{im.cols, im.rows});
 
-    // TODO: apply rotating to keypoints
+    // TODO
+    // [x] apply rotating to keypoints
+    // [ ] check with matplotlib
     for (auto& keypoint: keypoints) {
         geo::to_cartesian(keypoint.pt);
         fmt::print("> rotated ({0:0.1f},{1:0.1f})", keypoint.pt.x, keypoint.pt.y);
@@ -95,6 +97,10 @@ int main(int argc, char **argv) {
     cv::imwrite("rotated.jpg", im);
     fmt::print("Rotated output image ({} degrees) saved to {}\n", rotation, "rotated.jpg");
 
+    // TODO
+    // [ ] separate with std::partition in bits to decode
+    // [ ] decode bits
+    
     // Show blobs
     // cv::imshow("keypoints", im_with_keypoints);
     // cv::waitKey(0);
