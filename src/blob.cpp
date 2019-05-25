@@ -2,20 +2,20 @@
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
 #include <fmt/color.h>
-#include <hw/util.hpp>
+#include <toy_decoder/util.hpp>
 #include <algorithm>
 #include <iterator>
 #include <vector>
 #include <unordered_map>
 #include <cmath>
 
-using namespace hw::util;
+using namespace toy_decoder::util;
 using namespace fmt::literals;
 namespace fs = boost::filesystem;
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        fmt::print("No file argument!\n");
+        fmt::print("NO file argument!\n");
         return -1;
     }
 
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     keypoints.erase(bit_end_it, keypoints.end());
 
     // red point is now in front: position 0
-    auto _ = std::stable_partition(line.begin(), line.end(), [&](const auto &p) { return color::is_red(im, p); });
+    std::stable_partition(line.begin(), line.end(), [&](const auto &p) { return color::is_red(im, p); }); // ignore iterator
     geo::to_cartesian(line[0].pt);
     geo::to_cartesian(line[1].pt);
     const auto &red_point = line[0].pt;
@@ -108,9 +108,10 @@ int main(int argc, char **argv) {
 
     auto vec = geo::connecting_vector(red_point, black_point);
     float rotation = std::atan(vec.y / vec.x) * 180.0 / M_PI;
-    rotation *= -1;
+    rotation *= -1; // right hand rule: turn to left is negative, turn to right is positive
     // It's not enough to just turn prallel, the red dot has to be to the right of the black one
     // therefore a manual flip is necessary, if following condition is met
+    fmt::print("raw rotation {}\n", rotation);
     if (red_point.x < black_point.x) {
         rotation < 0 ? rotation -= 180.0 : rotation += 180;
     }
