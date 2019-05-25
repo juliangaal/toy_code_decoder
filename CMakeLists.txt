@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.1)
 project(hwcpp)
-set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_CXX_STANDARD 14)
+set(AUTO_TEST OFF CACHE BOOL "Enables Tests Post build")
 
 find_package(OpenCV REQUIRED)
 find_package(fmt REQUIRED)
@@ -13,6 +15,7 @@ enable_testing()
 set(EXE blob)
 add_executable(${EXE} src/blob.cpp)
 target_include_directories(${EXE} PRIVATE include)
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 target_link_libraries(${EXE}
         ${OpenCV_LIBS}
         ${Boost_SYSTEM_LIBRARY}
@@ -23,14 +26,19 @@ set(UNIT_TEST test_rot)
 add_executable(${UNIT_TEST} tests/test.cpp)
 add_test(NAME ${UNIT_TEST} COMMAND ${UNIT_TEST})
 target_include_directories(${UNIT_TEST} PRIVATE include)
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 target_link_libraries(${UNIT_TEST}
         ${OpenCV_LIBS}
         fmt::fmt
         Catch2::Catch2)
-add_custom_command(
+
+message(STATUS "AUTO_TEST is ${AUTO_TEST}")
+if(AUTO_TEST) 
+  add_custom_command(
         TARGET ${UNIT_TEST}
         COMMENT "Run tests"
         POST_BUILD
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND ${CMAKE_CTEST_COMMAND} --verbose
 )
+endif()

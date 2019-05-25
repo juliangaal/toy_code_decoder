@@ -9,8 +9,8 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
-namespace hw::util {
-
+namespace hw {
+namespace util {
 namespace units {
 
 class Degrees {
@@ -49,10 +49,15 @@ bool same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float
     switch (color) {
         case RED:
             if (std::abs(RGBRED[0] - true_color.val[2]) < tolerance) return true;
+            break;
         case GREEN:
             if (std::abs(RGBGREEN[1] - true_color.val[1]) < tolerance) return true;
+            break;
         case BLUE:
             if (std::abs(RGBBLUE[2] - true_color.val[0]) < tolerance) return true;
+            break;
+        default:
+            break;
     }
 
     return false;
@@ -72,7 +77,7 @@ geo::UnitVector connecting_vector(const cv::Point2f &a, const cv::Point2f &b) {
 }
 
 // see https://stackoverflow.com/questions/25642532/opencv-pointx-y-represent-column-row-or-row-column
-void to_cartesian(cv::Point2f& point) {
+void to_cartesian(cv::Point2f &point) {
     point.y *= -1;
 }
 
@@ -87,11 +92,12 @@ void rotate(cv::Point2f &point, units::Degrees degrees) {
     point.y = x * std::sin(angle) + point.y * std::cos(angle);
 }
 
-float norm(const cv::Point2f& point) {
+float norm(const cv::Point2f &point) {
     return std::sqrt(std::pow(point.x, 2) + std::pow(point.y, 2));
 }
 
 } // namespace hw::util::calc
 } // namespace hw::util
+} // namespace hw
 
 #endif //HWCPP_UTIL_HPP
