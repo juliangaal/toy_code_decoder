@@ -1,5 +1,13 @@
 # hw 
 
-[![CircleCI](https://circleci.com/gh/juliangaal/hw/tree/master.svg?style=svg)](https://circleci.com/gh/juliangaal/hw/tree/master)
+<p float="left">
+  <img src="./pics/code_diff_sizes.jpg" width="200" />
+</p>
 
-Build tested for ubuntu 16.04 and 18.04, run the [installation script](./install.sh) to install all necessary components
+#### Properties
+* red and black blob define the absolute orientation
+* x,y coordinate encoding: 
+  * binary representation: big blobs represent 1s, small blobs represent 0s
+  * Once properly rotated (red blob in the east), blobs above middle line represent x coordinate, below y coordinate
+
+Build [![CircleCI](https://circleci.com/gh/juliangaal/hw/tree/master.svg?style=svg)](https://circleci.com/gh/juliangaal/hw/tree/master) for ubuntu 16.04 and 18.04, run the [installation script](./install.sh) to install all necessary components
