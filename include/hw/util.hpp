@@ -8,9 +8,21 @@
 #include <cmath>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <vector>
 
 namespace hw {
 namespace util {
+
+size_t decode(std::vector<cv::KeyPoint>::const_iterator begin,
+              std::vector<cv::KeyPoint>::const_iterator end) {
+    size_t val = 0;
+    for (auto it = begin; it != end; it++) {
+        size_t exp = std::distance(it, end) - 1;
+        val += std::pow(2, exp);
+    }
+    return val;
+}
+
 namespace units {
 
 class Degrees {
@@ -36,19 +48,24 @@ namespace color {
 enum Color {
     RED,
     GREEN,
-    BLUE
+    BLUE,
+    BLACK,
 };
 
 const static cv::Vec3b RGBRED = cv::Vec3b{255, 0, 0};
 const static cv::Vec3b RGBGREEN = cv::Vec3b{0, 255, 0};
 const static cv::Vec3b RGBBLUE = cv::Vec3b{0, 0, 255};
+const static cv::Vec3b RGBBLACK = cv::Vec3b{0, 0, 0};
 
-bool same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float tolerance = 75.0) {
+bool same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float tolerance = 40.0) {
     // opencv idiots thought it was a good idea to return color in BGR
     auto true_color = im.at<cv::Vec3b>(point.pt);
     switch (color) {
         case RED:
-            if (std::abs(RGBRED[0] - true_color.val[2]) < tolerance) return true;
+            if (std::abs(RGBRED[0] - true_color.val[2]) < tolerance &&
+                std::abs(RGBRED[1] - true_color.val[1]) < tolerance &&
+                std::abs(RGBRED[2] - true_color.val[0]) < tolerance)
+                return true;
             break;
         case GREEN:
             if (std::abs(RGBGREEN[1] - true_color.val[1]) < tolerance) return true;
@@ -56,11 +73,25 @@ bool same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float
         case BLUE:
             if (std::abs(RGBBLUE[2] - true_color.val[0]) < tolerance) return true;
             break;
+        case BLACK:
+            if (std::abs(RGBBLACK[0] - true_color.val[2]) < tolerance &&
+                std::abs(RGBBLACK[1] - true_color.val[1]) < tolerance &&
+                std::abs(RGBBLACK[2] - true_color.val[0]) < tolerance)
+                return true;
+            break;
         default:
             break;
     }
 
     return false;
+}
+
+bool is_black(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 40.0) {
+    return same_color(im, point, Color::BLACK, tolerance);
+}
+
+bool is_red(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 40.0) {
+    return same_color(im, point, Color::RED, tolerance);
 }
 
 } // namespace hw::util::color

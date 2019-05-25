@@ -21,7 +21,7 @@ target_link_libraries(${EXE}
         ${Boost_FILESYSTEM_LIBRARY}
         fmt::fmt)
 
-set(UNIT_TEST test_rot)
+set(UNIT_TEST unit_test)
 add_executable(${UNIT_TEST} tests/test.cpp)
 add_test(NAME ${UNIT_TEST} COMMAND ${UNIT_TEST})
 target_include_directories(${UNIT_TEST} PRIVATE include)

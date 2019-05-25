@@ -1,14 +1,15 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 #include <hw/util.hpp>
+#include <vector>
 #include <opencv2/opencv.hpp>
 
 using namespace hw::util;
 
-TEST_CASE ("Test rotation/rotation matrix", "[test_rotation]") {
+TEST_CASE("Test rotation/rotation matrix", "[test_rotation]") {
     auto in = cv::Point2f(1, 0);
     calc::rotate(in, units::Degrees(90.0));
-    REQUIRE(std::abs(in.x - 0) <git  0.00001);
+    REQUIRE(std::abs(in.x - 0) < 0.00001);
     REQUIRE(std::abs(in.y - 1) < 0.00001);
 
     auto in2 = cv::Point2f(1, 0);
@@ -17,7 +18,7 @@ TEST_CASE ("Test rotation/rotation matrix", "[test_rotation]") {
     REQUIRE(std::abs(in2.y - (-1)) < 0.00001);
 }
 
-TEST_CASE ("Test vector between two points", "[test_connecting_vector]") {
+TEST_CASE("Test vector between two points", "[test_connecting_vector]") {
     auto a = cv::Point2f(1, 0);
     auto b = cv::Point2f(0, 0);
     auto vec1 = geo::connecting_vector(a, b);
@@ -31,4 +32,11 @@ TEST_CASE ("Test vector between two points", "[test_connecting_vector]") {
     REQUIRE(std::abs(vec2.x - 0.5547) < 0.00001);
     REQUIRE(std::abs(vec2.y - 0.83205) < 0.00001);
     REQUIRE(calc::norm(vec2) == 1.0);
+}
+
+TEST_CASE("Test vector decoder", "[test_vector_decoder]") {
+    // TODO fill with actual values
+    std::vector<cv::KeyPoint> points(10);
+    std::fill(points.begin(), points.end(), cv::KeyPoint(cv::Point2f(1, 0), 1));
+    REQUIRE(decode(points.begin(), points.end()) == static_cast<size_t>(std::pow(2, 10)-1.0));
 }

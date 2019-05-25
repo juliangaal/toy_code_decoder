@@ -1,11 +1,16 @@
 #include <boost/filesystem.hpp>
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
+#include <fmt/color.h>
 #include <hw/util.hpp>
+#include <algorithm>
+#include <iterator>
 #include <vector>
+#include <unordered_map>
 #include <cmath>
 
 using namespace hw::util;
+using namespace fmt::literals;
 namespace fs = boost::filesystem;
 
 int main(int argc, char **argv) {
@@ -23,9 +28,9 @@ int main(int argc, char **argv) {
     fmt::print("OPENCV version {}.{}\n", CV_MAJOR_VERSION, CV_MINOR_VERSION);
     fmt::print("Got file {}\n", file);
 
-    // Read image
-    cv::Mat im = cv::imread(file, cv::IMREAD_COLOR);
+    fmt::print("Attempting to find blobs\n");
 
+    cv::Mat im = cv::imread(file, cv::IMREAD_COLOR);
     cv::SimpleBlobDetector::Params params;
 
     // Change thresholds
@@ -54,6 +59,11 @@ int main(int argc, char **argv) {
     detector->detect(im, keypoints);
 #endif
 
+    if (keypoints.size() != 10) {
+        fmt::print("Not enough keypoint found, exiting.\n");
+        return -1;
+    }
+
     // Print keypoint information
     for (auto &point: keypoints) {
         auto color = im.at<cv::Vec3b>(point.pt);
@@ -73,36 +83,82 @@ int main(int argc, char **argv) {
 
     // Rotate image
     // calculate rotation
-    auto vec = geo::connecting_vector(keypoints[0].pt, keypoints[1].pt);
+    fmt::print("Attempting to rotate iage and points\n");
+    auto bit_end_it = std::stable_partition(keypoints.begin(), keypoints.end(), [&](const auto &p) {
+        return !color::is_black(im, p) and !color::is_red(im, p);
+    });
+
+
+    if (std::distance(bit_end_it, keypoints.end()) != 2) {
+        fmt::print("Couldn't find line. Line length {}", std::distance(bit_end_it, keypoints.end()));
+        return -1;
+    }
+
+    std::vector<cv::KeyPoint> line(std::make_move_iterator(bit_end_it), std::make_move_iterator(keypoints.end()));
+    keypoints.erase(bit_end_it, keypoints.end());
+
+    // red point is now in front: position 0
+    auto _ = std::stable_partition(line.begin(), line.end(), [&](const auto &p) { return color::is_red(im, p); });
+    const auto &red_point = line[0].pt;
+    const auto &black_point = line[1].pt;
+
+    auto vec = geo::connecting_vector(red_point, black_point);
     float rotation = std::atan(vec.y / vec.x) * 180.0 / M_PI;
     // TODO adjust rotation in relation to north/south dot
-    if (keypoints[1].pt.y < keypoints[0].pt.y) rotation *= -1;
+
+    if (red_point.y < black_point.y) rotation *= -1;
+    // TODO edge case parallel
 
     // apply rotation to image
-    auto shape = cv::Point2f{static_cast<float>(im.cols/2.), static_cast<float>(im.rows/2.)};
+    auto shape = cv::Point2f{static_cast<float>(im.cols / 2.), static_cast<float>(im.rows / 2.)};
     auto img_rot_matrix = cv::getRotationMatrix2D(shape, rotation, 1);
     cv::warpAffine(im, im, img_rot_matrix, cv::Size{im.cols, im.rows});
 
-    // TODO
-    // [x] apply rotating to keypoints
-    // [ ] check with matplotlib
-    for (auto& keypoint: keypoints) {
+    // apply rotation to keypoints
+    for (auto &keypoint: keypoints) {
         geo::to_cartesian(keypoint.pt);
         fmt::print("> rotated ({0:0.1f},{1:0.1f})", keypoint.pt.x, keypoint.pt.y);
         calc::rotate(keypoint.pt, units::Degrees(rotation));
         fmt::print(" to ({0:0.1f},{1:0.1f})\n", keypoint.pt.x, keypoint.pt.y);
     }
 
+    // apply rotation to line
+    for (auto &keypoint: line) {
+        geo::to_cartesian(keypoint.pt);
+        fmt::print("> rotated ({0:0.1f},{1:0.1f})", keypoint.pt.x, keypoint.pt.y);
+        calc::rotate(keypoint.pt, units::Degrees(rotation));
+        fmt::print(" to ({0:0.1f},{1:0.1f})\n", keypoint.pt.x, keypoint.pt.y);
+    }
+
+    // TODO
+    // [x] separate with std::partition in bits to decode
+    // [ ] decode bits: color/size?!
+    const auto separator_it = std::partition(keypoints.begin(), keypoints.end(), [&](const auto &p) {
+        // line is rotated => any points below/above points below to either bits
+        return p.pt.y > line[0].pt.y;
+    });
+
+    // Sort keypoints for bit reading: the higher x, the more significant the bit is
+    std::sort(keypoints.begin(), separator_it, [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
+    std::sort(separator_it, keypoints.end(), [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
+    fmt::print("Sorted points according to rotation and location:\nUpper points:\n");
+    for (auto it = keypoints.begin(); it != separator_it; it++) {
+        fmt::print("  - ({0:0.1f},{1:0.1f})\n", (*it).pt.x, (*it).pt.y);
+    }
+
+    fmt::print("Lower points:\n");
+    for (auto it = separator_it; it != keypoints.end(); it++) {
+        fmt::print("  - ({0:0.1f},{1:0.1f})\n", (*it).pt.x, (*it).pt.y);
+    }
+
     // save rotated image
     cv::imwrite("rotated.jpg", im);
     fmt::print("Rotated output image ({} degrees) saved to {}\n", rotation, "rotated.jpg");
 
-    // TODO
-    // [ ] separate with std::partition in bits to decode
-    // [ ] decode bits
-    
     // Show blobs
-    // cv::imshow("keypoints", im_with_keypoints);
-    // cv::waitKey(0);
+    cv::imshow("keypoints", im_with_keypoints);
+    cv::waitKey(0);
+
+    return 0;
 }
 
