@@ -35,7 +35,7 @@ public:
 
     void rotate_img(toy_decoder::util::units::Degrees degrees);
 
-    std::tuple<int, bool> decode();
+    std::tuple<cv::Point2i, bool> decode();
 
     void save_img(std::string name);
 
@@ -45,6 +45,7 @@ private:
     cv::SimpleBlobDetector::Params params;
     std::vector<cv::KeyPoint> keypoints;
     std::vector<cv::KeyPoint> orientation_line;
+    float avg_blob_size;
 };
 
 }
