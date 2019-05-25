@@ -53,7 +53,7 @@ void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
 std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
     if (this->keypoints.size() != 10) {
         fmt::print("Not enough keypoint found!\n");
-        return {0.0, 0.0, false};
+        return std::make_tuple(0.0, 0.0, false);
     }
 
     // partition in bit points and orientation points
@@ -63,7 +63,7 @@ std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
 
     if (std::distance(bit_end_it, keypoints.end()) != 2) {
         fmt::print("Couldn't find line. Line length {}", std::distance(bit_end_it, keypoints.end()));
-        return {0.0, 0.0, false};
+        return std::make_tuple(0.0, 0.0, false);
     }
 
     // move orientations points to new vec and delete from old
@@ -92,7 +92,7 @@ std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
         orientation < 0 ? img_rotation -= 180.0 : img_rotation += 180;
     }
 
-    return {orientation, img_rotation, true};
+    return std::make_tuple(orientation, img_rotation, true);
 }
 
 void ToyDecoder::rotate_img(toy_decoder::util::units::Degrees degrees) {
@@ -118,7 +118,7 @@ void ToyDecoder::rotate_keypoints(toy_decoder::util::units::Degrees degrees) {
 std::tuple<int, bool> ToyDecoder::decode() {
     if ((this->orientation_line.size() + this->keypoints.size()) != 10) {
         fmt::print("Can't decode less than 10 points");
-        return {0, false};
+        return std::make_tuple(0, false);
     }
 
     // TODO
@@ -136,7 +136,7 @@ std::tuple<int, bool> ToyDecoder::decode() {
 
     // TODO decoding
 
-    return {1, true};
+    return std::make_tuple(1, true);
 }
 
 void ToyDecoder::save_img(std::string name) {
