@@ -4,9 +4,7 @@
 #include <hw/util.hpp>
 #include <vector>
 #include <cmath>
-#include <Eigen/Dense>
 
-using namespace Eigen;
 using namespace hw::util;
 namespace fs = boost::filesystem;
 

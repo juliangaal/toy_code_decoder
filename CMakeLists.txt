@@ -6,6 +6,7 @@ find_package(OpenCV REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Catch2 REQUIRED)
 
 enable_testing()
 
@@ -16,14 +17,16 @@ target_link_libraries(${EXE}
         ${OpenCV_LIBS}
         ${Boost_SYSTEM_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}
-        Eigen3::Eigen
         fmt::fmt)
 
 set(UNIT_TEST test_rot)
 add_executable(${UNIT_TEST} tests/test.cpp)
 add_test(NAME ${UNIT_TEST} COMMAND ${UNIT_TEST})
 target_include_directories(${UNIT_TEST} PRIVATE include)
-target_link_libraries(${UNIT_TEST} ${OpenCV_LIBS} fmt::fmt)
+target_link_libraries(${UNIT_TEST}
+        ${OpenCV_LIBS}
+        fmt::fmt
+        Catch2::Catch2)
 add_custom_command(
         TARGET ${UNIT_TEST}
         COMMENT "Run tests"

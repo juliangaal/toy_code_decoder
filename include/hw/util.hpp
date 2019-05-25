@@ -67,7 +67,7 @@ using UnitVector = cv::Point2f;
 geo::UnitVector connecting_vector(const cv::Point2f &a, const cv::Point2f &b) {
     float x = std::abs(a.x - b.x);
     float y = std::abs(a.y - b.y);
-    float length = std::sqrt(std::pow(x, 2.0) + std::pow(y, 2.0));
+    float length = std::sqrt(std::pow(x, 2) + std::pow(y, 2));
     return geo::UnitVector{x / length, y / length};
 }
 
@@ -88,7 +88,7 @@ void rotate(cv::Point2f &point, units::Degrees degrees) {
 }
 
 float norm(const cv::Point2f& point) {
-    return std::sqrt(std::pow(point.x, 2.0) + std::pow(point.y, 2.0));
+    return std::sqrt(std::pow(point.x, 2) + std::pow(point.y, 2));
 }
 
 } // namespace hw::util::calc
