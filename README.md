@@ -1,4 +1,4 @@
-# toy code decoder
+# toy decoder
 
 rotation invariant toy decoder for codes in this style:  
 
