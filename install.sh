@@ -33,7 +33,7 @@ if [ ! -d "opencv" ]; then
   git clone https://github.com/opencv/opencv.git
 fi
 cd opencv && mkdir -p build && cd build
-cmake -DWITH_EIGEN=OFF -DCMAKE_BUILD_TYPE=Release ..
+cmake -DWITH_EIGEN=OFF ..
 make -j4 
 sudo make install
 
