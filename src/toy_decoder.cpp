@@ -18,18 +18,15 @@ ToyDecoder::ToyDecoder(cv::Mat &img) : img{img}, params{}, keypoints{}, orientat
 
     // Filter by Area.
     this->params.filterByArea = false;
-//    this->params.minArea = 100;
-//    this->params.maxArea = 1000000;
 
     // Filter by Circularity
     this->params.filterByCircularity = false;
-    //this->params.minCircularity = 0.01;
 
     // Filter by Convexity
     params.filterByConvexity = true;
     params.minConvexity = 0.87;
 
-// Filter by Inertia
+    // Filter by Inertia
     params.filterByInertia = true;
     params.minInertiaRatio = 0.01;
 
@@ -51,8 +48,6 @@ void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
             for (const auto& point: keypoints) {
                 cv::circle(this->img, point.pt, 3, cv::Scalar(255, 255, 255), -1);
             }
-//            cv::drawKeypoints(this->img, keypoints, this->img, cv::Scalar(255, 255, 255),
-//                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
             break;
         case NO:
         default:
@@ -60,7 +55,7 @@ void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
     }
 }
 
-std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
+std::tuple<float, bool> ToyDecoder::calculate_orientation() {
     using namespace toy_decoder::util;
 
     // partition in bit points and orientation points
@@ -84,24 +79,12 @@ std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
     // calculate vector that is spanned by orientation point and centroid of all other points
     geo::to_cartesian(orientation_point.pt);
     geo::to_cartesian(centroid);
-    fmt::print("orientation point ({},{}) - centroid ({},{})\n", orientation_point.pt.x, orientation_point.pt.y, centroid.x, centroid.y);
-
     auto vec = geo::connecting_vector(centroid, orientation_point.pt);
-    fmt::print("Vec: ({},{})\n", vec.x, vec.y);
     // calculate absolute orientation, * -1 because of rotation in right hand rule
     if (vec.x == 0) vec.x += 0.0000001;
     float orientation = std::atan2(vec.y, vec.x) * (180.0 / M_PI) * -1;
-    fmt::print("orientation {}\n", orientation);
-    float img_rotation = orientation;
-    // It's not enough to just turn parallel (enough for orientation estimation),
-    // but the red dot has to be to the right of the black one
-    // therefore a manual flip is necessary, if following condition is met
-    // saved in img_rotation
-//    if (orientation_point.pt.x < centroid.x) {
-//        orientation < 0 ? img_rotation -= 180.0 : img_rotation += 180;
-//    }
 
-    return std::make_tuple(orientation, img_rotation, true);
+    return std::make_tuple(orientation, true);
 }
 
 void ToyDecoder::rotate_img(toy_decoder::util::units::Degrees degrees) {
@@ -130,7 +113,7 @@ std::tuple<cv::Point2i, bool> ToyDecoder::decode() {
     // TODO
     // [x] separate with std::partition in bits to decode
     // [ ] catch erroneuos rotations
-    // [ ] decode bits: color/size?!
+    // [x] decode bits: size differences
     const auto separator_it = std::partition(this->keypoints.begin(), this->keypoints.end(), [&](const auto &p) {
         // line is rotated => any points below/above points below to either bits
         return p.pt.y > this->orientation_point.pt.y;

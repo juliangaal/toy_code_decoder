@@ -36,17 +36,16 @@ int main(int argc, char **argv) {
     ToyDecoder decoder(im);
 
     float orientation;
-    float img_rotation;
     cv::Point2i decoded_point;
     bool result;
 
     decoder.calculate_keypoints(Mark_Keypoints::YES);
-    std::tie(orientation, img_rotation, result) = decoder.calculate_rotation();
+    std::tie(orientation, result) = decoder.calculate_orientation();
     decoder.open_img("before");
-    decoder.rotate_img(util::units::Degrees(img_rotation));
+    decoder.rotate_img(util::units::Degrees(orientation));
     decoder.save_img("main.jpg");
     decoder.open_img("after");
-    decoder.rotate_keypoints(util::units::Degrees(img_rotation));
+    decoder.rotate_keypoints(util::units::Degrees(orientation));
     fmt::print("Rotation: {}\n", orientation);
     std::tie(decoded_point, result) = decoder.decode();
 

@@ -29,7 +29,7 @@ public:
 
     void calculate_keypoints(Mark_Keypoints mark);
 
-    std::tuple<float, float, bool> calculate_rotation();
+    std::tuple<float, bool> calculate_orientation();
 
     void rotate_keypoints(toy_decoder::util::units::Degrees degrees);
 
