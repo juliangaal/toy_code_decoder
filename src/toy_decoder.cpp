@@ -5,32 +5,37 @@
 #include <toy_decoder/toy_decoder.hpp>
 #include <fmt/format.h>
 #include <exception>
+#include <numeric>
+#include <algorithm>
 
 using namespace toy_decoder;
 
-ToyDecoder::ToyDecoder(cv::Mat &img) : img{img}, params{}, keypoints{}, orientation_line{}, avg_blob_size{} {
+ToyDecoder::ToyDecoder(cv::Mat &img) : img{img}, params{}, keypoints{}, orientation_point{}, avg_size{} {
     // set simple blob detector params
     // Change thresholds
     this->params.minThreshold = 10;
     this->params.maxThreshold = 200;
 
     // Filter by Area.
-    this->params.filterByArea = true;
-    this->params.minArea = 100;
-    this->params.maxArea = 1000000;
+    this->params.filterByArea = false;
 
     // Filter by Circularity
-    this->params.filterByCircularity = true;
-    this->params.minCircularity = 0.01;
+    this->params.filterByCircularity = false;
+
+    // Filter by Convexity
+    params.filterByConvexity = true;
+    params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    params.filterByInertia = true;
+    params.minInertiaRatio = 0.01;
 
     keypoints.reserve(10);
-    orientation_line.reserve(2);
 }
 
 ToyDecoder::ToyDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : img{img}, params{params}, keypoints{},
-                                                                              orientation_line{}, avg_blob_size{} {
+                                                                              orientation_point{}, avg_size{} {
     keypoints.reserve(10);
-    orientation_line.reserve(2);
 }
 
 void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
@@ -40,8 +45,9 @@ void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
 
     switch (mark) {
         case YES:
-            cv::drawKeypoints(this->img, keypoints, this->img, cv::Scalar(0, 0, 255),
-                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+            for (const auto& point: keypoints) {
+                cv::circle(this->img, point.pt, 3, cv::Scalar(255, 255, 255), -1);
+            }
             break;
         case NO:
         default:
@@ -49,51 +55,36 @@ void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
     }
 }
 
-std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
+std::tuple<float, bool> ToyDecoder::calculate_orientation() {
     using namespace toy_decoder::util;
 
-    if (this->keypoints.size() != 10) {
-        fmt::print("Not enough keypoint found!\n");
-        return std::make_tuple(0.0, 0.0, false);
-    }
-
     // partition in bit points and orientation points
-    auto bit_end_it = std::stable_partition(keypoints.begin(), keypoints.end(), [&](const auto &p) {
-        return !color::is_black(this->img, p) and !color::is_red(this->img, p);
+    std::sort(keypoints.begin(), keypoints.end(), [&](const auto& p1, const auto& p2) {
+        return p1.size < p2.size;
     });
 
-    if (std::distance(bit_end_it, keypoints.end()) != 2) {
-        fmt::print("Couldn't find line. Line length {}", std::distance(bit_end_it, keypoints.end()));
-        return std::make_tuple(0.0, 0.0, false);
+    // orientation point is now last in vector, will be deleted after
+    this->orientation_point = keypoints.back();
+    keypoints.pop_back();
+
+    cv::Point2f centroid;
+    for (const auto& kp: keypoints) {
+        centroid.x += kp.pt.x;
+        centroid.y += kp.pt.y;
     }
 
-    // move orientations points to new vec and delete from old
-    this->orientation_line = std::vector<cv::KeyPoint>(std::make_move_iterator(bit_end_it),
-                                                       std::make_move_iterator(keypoints.end()));
-    keypoints.erase(bit_end_it, keypoints.end());
+    centroid.x /= keypoints.size();
+    centroid.y /= keypoints.size();
 
-    // partition again: red point is now in front: position 0
-    std::stable_partition(this->orientation_line.begin(), this->orientation_line.end(),
-                          [&](const auto &p) { return color::is_red(this->img, p); }); // ignore iterator
-    auto &red_point = this->orientation_line[0].pt;
-    auto &black_point = this->orientation_line[1].pt;
-
-    // calculate vector that is spanned by red and black point
-    geo::to_cartesian(red_point);
-    geo::to_cartesian(black_point);
-    auto vec = geo::connecting_vector(red_point, black_point);
+    // calculate vector that is spanned by orientation point and centroid of all other points
+    geo::to_cartesian(orientation_point.pt);
+    geo::to_cartesian(centroid);
+    auto vec = geo::connecting_vector(centroid, orientation_point.pt);
     // calculate absolute orientation, * -1 because of rotation in right hand rule
-    float orientation = (std::atan(vec.y / vec.x) * 180.0 / M_PI) * -1;
-    float img_rotation = orientation;
-    // It's not enough to just turn parallel (enough for orientation estimation),
-    // but the red dot has to be to the right of the black one
-    // therefore a manual flip is necessary, if following condition is met
-    // saved in img_rotation
-    if (red_point.x < black_point.x) {
-        orientation < 0 ? img_rotation -= 180.0 : img_rotation += 180;
-    }
+    if (vec.x == 0) vec.x += 0.0000001;
+    float orientation = std::atan2(vec.y, vec.x) * (180.0 / M_PI) * -1;
 
-    return std::make_tuple(orientation, img_rotation, true);
+    return std::make_tuple(orientation, true);
 }
 
 void ToyDecoder::rotate_img(toy_decoder::util::units::Degrees degrees) {
@@ -109,32 +100,23 @@ void ToyDecoder::rotate_keypoints(toy_decoder::util::units::Degrees degrees) {
     for (auto &keypoint: keypoints) {
         geo::to_cartesian(keypoint.pt);
         calc::rotate(keypoint.pt, degrees);
-        this->avg_blob_size += keypoint.size;
+        this->avg_size += keypoint.size;
     }
 
     // produces mean blob size
-    this->avg_blob_size /= keypoints.size();
+    this->avg_size /= keypoints.size();
 
-    // apply rotation to this->orientation_line
-    for (auto &keypoint: this->orientation_line) {
-        // no need to convert to cartesian, already done in calculate_rotation
-        calc::rotate(keypoint.pt, degrees);
-    }
+    calc::rotate(orientation_point.pt, degrees);
 }
 
 std::tuple<cv::Point2i, bool> ToyDecoder::decode() {
-    if ((this->orientation_line.size() + this->keypoints.size()) != 10) {
-        fmt::print("Can't decode less than 10 points");
-        return std::make_tuple(cv::Point2i{0, 0}, false);
-    }
-
     // TODO
     // [x] separate with std::partition in bits to decode
     // [ ] catch erroneuos rotations
-    // [ ] decode bits: color/size?!
+    // [x] decode bits: size differences
     const auto separator_it = std::partition(this->keypoints.begin(), this->keypoints.end(), [&](const auto &p) {
         // line is rotated => any points below/above points below to either bits
-        return p.pt.y > this->orientation_line[0].pt.y;
+        return p.pt.y > this->orientation_point.pt.y;
     });
 
     // Sort keypoints for bit reading: first half of vector will be keypoints above
@@ -143,8 +125,8 @@ std::tuple<cv::Point2i, bool> ToyDecoder::decode() {
 
     // TODO decoding? Test with size
     cv::Point2i p{0, 0};
-    p.x = util::decode(this->keypoints.cbegin(), separator_it, avg_blob_size);
-    p.y = util::decode(separator_it, this->keypoints.cend(), avg_blob_size);
+    p.x = util::decode(this->keypoints.cbegin(), separator_it, avg_size);
+    p.y = util::decode(separator_it, this->keypoints.cend(), avg_size);
 
     return std::make_tuple(p, true);
 }
@@ -153,8 +135,8 @@ void ToyDecoder::save_img(std::string name) {
     cv::imwrite(name, this->img);
 }
 
-void ToyDecoder::open_img() {
-    cv::imshow("rotated image", this->img);
+void ToyDecoder::open_img(std::string name) {
+    cv::imshow(name, this->img);
     cv::waitKey(0);
 }
 

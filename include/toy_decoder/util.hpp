@@ -14,7 +14,8 @@ namespace toy_decoder {
 
 namespace util {
 
-int decode(std::vector<cv::KeyPoint>::const_iterator begin, std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
+int decode(std::vector<cv::KeyPoint>::const_iterator begin,
+           std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
 
 namespace units {
 
@@ -54,11 +55,11 @@ enum Color {
     BLACK,
 };
 
-bool same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float tolerance = 40.0);
+bool same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float tolerance = 30.0);
 
-bool is_black(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 40.0);
+bool is_black(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 30.0);
 
-bool is_red(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 40.0);
+bool is_red(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 30.0);
 
 } // namespace toy_decoder::util::color
 

@@ -29,7 +29,7 @@ public:
 
     void calculate_keypoints(Mark_Keypoints mark);
 
-    std::tuple<float, float, bool> calculate_rotation();
+    std::tuple<float, bool> calculate_orientation();
 
     void rotate_keypoints(toy_decoder::util::units::Degrees degrees);
 
@@ -39,13 +39,13 @@ public:
 
     void save_img(std::string name);
 
-    void open_img();
+    void open_img(std::string name);
 private:
     cv::Mat &img;
     cv::SimpleBlobDetector::Params params;
     std::vector<cv::KeyPoint> keypoints;
-    std::vector<cv::KeyPoint> orientation_line;
-    float avg_blob_size;
+    cv::KeyPoint orientation_point;
+    float avg_size;
 };
 
 }
