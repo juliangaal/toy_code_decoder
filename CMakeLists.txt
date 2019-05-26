@@ -26,12 +26,12 @@ target_link_libraries(blob PRIVATE
 
 set(SOURCES src/toy_decoder.cpp src/util.cpp)
 set(HEADERS include/toy_decoder/toy_decoder.hpp include/toy_decoder/util.hpp)
-add_library(ToyDecoder ${SOURCES} ${HEADERS})
-target_include_directories(ToyDecoder PUBLIC
+add_library(toy_decoder ${SOURCES} ${HEADERS})
+target_include_directories(toy_decoder PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
-target_compile_options(ToyDecoder PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-target_link_libraries(ToyDecoder PUBLIC
+target_compile_options(toy_decoder PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+target_link_libraries(toy_decoder PUBLIC
                       ${OpenCV_LIBS}
                       fmt::fmt)
 
@@ -43,7 +43,7 @@ target_link_libraries(unit_test PRIVATE
                       ${OpenCV_LIBS}
                       fmt::fmt
                       Catch2::Catch2
-                      ToyDecoder)
+                      toy_decoder)
 
 message(STATUS "AUTO_TEST is ${AUTO_TEST}")
 if (AUTO_TEST)
@@ -56,7 +56,7 @@ if (AUTO_TEST)
     )
 endif ()
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS toy_decoder
         EXPORT ${PROJECT_NAME}Targets
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
@@ -67,7 +67,7 @@ install(EXPORT ${PROJECT_NAME}Targets
         NAMESPACE ToyDecoder::
         DESTINATION lib/cmake/${PROJECT_NAME})
 
-install(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES ${HEADERS} DESTINATION include/toy_decoder)
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
