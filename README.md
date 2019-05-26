@@ -1,4 +1,4 @@
-# toy decoder
+# toy (en/de)coder
 rotation invariant toy decoder for codes in this style:  
 
 <p float="left">
@@ -20,6 +20,22 @@ cd toy_decoder && mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. && make
 ```
 setting `-DAUTO_TEST=ON` will run unit test on every build
+
+#### Encode
+The requirements can be installed with 
+```bash
+pip install -r requirements.txt
+```
+
+When everything is installed, run the script 
+```bash
+scripts/encoder.py <insert x> <insert y>
+```
+
+#### Decode
+```cpp
+# TODO
+```
 
 #### Use with cmake
 ```cmake
