@@ -36,6 +36,7 @@ void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& cont
 
     cv::Point pt(r.x + ((r.width - text.width) / 2), r.y + ((r.height + text.height) / 2));
     cv::rectangle(im, pt + cv::Point(0, baseline), pt + cv::Point(text.width, -text.height), cv::Scalar(255,255,255), cv::FILLED);
+    cv::circle(im, pt, 7, cv::Scalar(0, 0, 0), -1);
     cv::putText(im, label, pt, fontface, scale*0.5, cv::Scalar(0,0,0), thickness, 8);
 }
 
@@ -53,7 +54,7 @@ static void drawSquares(cv::Mat& image, const std::vector<std::vector<cv::Point>
 int main()
 {
     //cv::Mat src = cv::imread("polygon.png");
-    cv::Mat src = cv::imread("../pics/hybrid.jpg");
+    cv::Mat src = cv::imread("../pics/rect_grey.jpg");
     if (src.empty())
         return -1;
 

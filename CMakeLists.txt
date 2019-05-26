@@ -13,7 +13,7 @@ find_package(Catch2 REQUIRED)
 
 enable_testing()
 
-add_executable(blob src/blob.cpp src/util.cpp)
+add_executable(blob src/blob.cpp)
 target_include_directories(blob PRIVATE include)
 target_compile_options(blob PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
 target_link_libraries(blob PRIVATE
@@ -38,6 +38,16 @@ target_compile_options(toy_decoder PRIVATE -Wall -Wextra -Weffc++ -pedantic -Wer
 target_link_libraries(toy_decoder PUBLIC
                       ${OpenCV_LIBS}
                       fmt::fmt)
+
+add_executable(main src/main.cpp)
+target_include_directories(main PRIVATE include)
+target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+target_link_libraries(main PRIVATE
+                      ${OpenCV_LIBS}
+                      ${Boost_SYSTEM_LIBRARY}
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      fmt::fmt
+                      toy_decoder)
 
 add_executable(unit_test tests/test.cpp)
 add_test(NAME unit_test COMMAND unit_test)

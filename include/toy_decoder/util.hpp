@@ -14,7 +14,8 @@ namespace toy_decoder {
 
 namespace util {
 
-int decode(std::vector<cv::KeyPoint>::const_iterator begin, std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
+int decode(std::vector<cv::KeyPoint>::const_iterator begin,
+           std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
 
 namespace units {
 
