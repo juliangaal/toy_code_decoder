@@ -13,21 +13,6 @@ find_package(Catch2 REQUIRED)
 
 enable_testing()
 
-add_executable(blob src/blob.cpp)
-target_include_directories(blob PRIVATE include)
-target_compile_options(blob PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-target_link_libraries(blob PRIVATE
-                      ${OpenCV_LIBS}
-                      ${Boost_SYSTEM_LIBRARY}
-                      ${Boost_FILESYSTEM_LIBRARY}
-                      fmt::fmt)
-
-add_executable(shapes src/shapes.cpp src/util.cpp)
-target_include_directories(shapes PRIVATE include)
-target_compile_options(shapes PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-target_link_libraries(shapes PRIVATE
-                      ${OpenCV_LIBS})
-
 set(SOURCES src/toy_decoder.cpp src/util.cpp)
 set(HEADERS include/toy_decoder/toy_decoder.hpp include/toy_decoder/util.hpp)
 add_library(toy_decoder ${SOURCES} ${HEADERS})
