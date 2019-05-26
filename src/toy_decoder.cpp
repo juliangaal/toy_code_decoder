@@ -84,10 +84,14 @@ std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
     // calculate vector that is spanned by orientation point and centroid of all other points
     geo::to_cartesian(orientation_point.pt);
     geo::to_cartesian(centroid);
-    fmt::print("({},{}) - ({},{})\n", orientation_point.pt.x, orientation_point.pt.y, centroid.x, centroid.y);
+    fmt::print("orientation point ({},{}) - centroid ({},{})\n", orientation_point.pt.x, orientation_point.pt.y, centroid.x, centroid.y);
+
     auto vec = geo::connecting_vector(centroid, orientation_point.pt);
+    fmt::print("Vec: ({},{})\n", vec.x, vec.y);
     // calculate absolute orientation, * -1 because of rotation in right hand rule
-    float orientation = (std::atan(vec.y / vec.x) * 180.0 / M_PI);
+    if (vec.x == 0) vec.x += 0.0000001;
+    float orientation = std::atan2(vec.y, vec.x) * (180.0 / M_PI) * -1;
+    fmt::print("orientation {}\n", orientation);
     float img_rotation = orientation;
     // It's not enough to just turn parallel (enough for orientation estimation),
     // but the red dot has to be to the right of the black one
