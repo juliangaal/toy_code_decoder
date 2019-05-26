@@ -24,12 +24,12 @@ setting `-DAUTO_TEST=ON` will run unit test on every build
 #### Encode
 The requirements can be installed with 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 When everything is installed, run the script 
 ```bash
-scripts/encoder.py <insert x> <insert y>
+python3 scripts/encoder.py <insert x> <insert y>
 ```
 
 #### Decode
