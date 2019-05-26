@@ -75,7 +75,7 @@ int toy_decoder::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
 
     for (auto it = begin; it != end; it++) {
         int exp = std::distance(it, end) - 1;
-        bit = ((*it).size < avg_size) ? 0 : 1;
+        bit =  ((*it).size < avg_size) ? 0 : 1;
         val += bit * std::pow(2, exp);
     }
     return val;
