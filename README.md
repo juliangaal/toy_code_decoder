@@ -3,15 +3,15 @@ rotation invariant toy decoder for codes in this style:
 
 <p float="left">
   <img src="./pics/rect_bw_90.jpg" width="200" />
-  <img src="./pics/code_bw_neg45.jpg" width="200" />
-  <img src="./pics/code_bew_neg90.jpg" width="200" />
+  <img src="./pics/rect_bw_neg45.jpg" width="200" />
+  <img src="./pics/rect_bw_neg90.jpg" width="200" />
 </p>
 
 #### Properties
-* red and black blob define the absolute orientation
+* thick bar used to calculate absolute rotation
 * x,y coordinate encoding: 
-  * binary representation: big blobs represent 1s, small blobs represent 0s
-  * Once properly rotated (red blob in the east), blobs above middle line represent x coordinate, below y coordinate
+  * binary representation: big rects represent 1s, small rects represent 0s
+  * Once properly rotated (thick bar in the east), rects above middle line represent x coordinate, below y coordinate
 
 #### Install
 ```bash
