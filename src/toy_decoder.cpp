@@ -6,10 +6,9 @@
 #include <fmt/format.h>
 #include <exception>
 
-using namespace toy_decoder::util;
 using namespace toy_decoder;
 
-ToyDecoder::ToyDecoder(cv::Mat &img) : img{img}, params{}, keypoints{}, orientation_line{} {
+ToyDecoder::ToyDecoder(cv::Mat &img) : img{img}, params{}, keypoints{}, orientation_line{}, avg_blob_size{} {
     // set simple blob detector params
     // Change thresholds
     this->params.minThreshold = 10;
@@ -29,7 +28,7 @@ ToyDecoder::ToyDecoder(cv::Mat &img) : img{img}, params{}, keypoints{}, orientat
 }
 
 ToyDecoder::ToyDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : img{img}, params{params}, keypoints{},
-                                                                              orientation_line{} {
+                                                                              orientation_line{}, avg_blob_size{} {
     keypoints.reserve(10);
     orientation_line.reserve(2);
 }
@@ -51,6 +50,8 @@ void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
 }
 
 std::tuple<float, float, bool> ToyDecoder::calculate_rotation() {
+    using namespace toy_decoder::util;
+
     if (this->keypoints.size() != 10) {
         fmt::print("Not enough keypoint found!\n");
         return std::make_tuple(0.0, 0.0, false);
@@ -102,11 +103,17 @@ void ToyDecoder::rotate_img(toy_decoder::util::units::Degrees degrees) {
 }
 
 void ToyDecoder::rotate_keypoints(toy_decoder::util::units::Degrees degrees) {
+    using namespace toy_decoder::util;
     // apply rotation to keypoints
+    // use opportunity to calculate average blob size in keypoints, which are encoding bits at this stage
     for (auto &keypoint: keypoints) {
         geo::to_cartesian(keypoint.pt);
         calc::rotate(keypoint.pt, degrees);
+        this->avg_blob_size += keypoint.size;
     }
+
+    // produces mean blob size
+    this->avg_blob_size /= keypoints.size();
 
     // apply rotation to this->orientation_line
     for (auto &keypoint: this->orientation_line) {
@@ -115,10 +122,10 @@ void ToyDecoder::rotate_keypoints(toy_decoder::util::units::Degrees degrees) {
     }
 }
 
-std::tuple<int, bool> ToyDecoder::decode() {
+std::tuple<cv::Point2i, bool> ToyDecoder::decode() {
     if ((this->orientation_line.size() + this->keypoints.size()) != 10) {
         fmt::print("Can't decode less than 10 points");
-        return std::make_tuple(0, false);
+        return std::make_tuple(cv::Point2i{0, 0}, false);
     }
 
     // TODO
@@ -134,9 +141,12 @@ std::tuple<int, bool> ToyDecoder::decode() {
     std::sort(this->keypoints.begin(), separator_it, [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
     std::sort(separator_it, this->keypoints.end(), [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
 
-    // TODO decoding
+    // TODO decoding? Test with size
+    cv::Point2i p{0, 0};
+    p.x = util::decode(this->keypoints.cbegin(), separator_it, avg_blob_size);
+    p.y = util::decode(separator_it, this->keypoints.cend(), avg_blob_size);
 
-    return std::make_tuple(1, true);
+    return std::make_tuple(p, true);
 }
 
 void ToyDecoder::save_img(std::string name) {

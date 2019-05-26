@@ -3,18 +3,9 @@
 //
 
 #include <toy_decoder/util.hpp>
+#include <iostream>
 
 using namespace toy_decoder::util;
-
-size_t decode(std::vector<cv::KeyPoint>::const_iterator begin,
-              std::vector<cv::KeyPoint>::const_iterator end) {
-    size_t val = 0;
-    for (auto it = begin; it != end; it++) {
-        size_t exp = std::distance(it, end) - 1;
-        val += std::pow(2, exp);
-    }
-    return val;
-}
 
 bool color::same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float tolerance) {
     // opencv idiots thought it was a good idea to return color in BGR
@@ -75,4 +66,17 @@ void calc::rotate(cv::Point2f &point, units::Degrees degrees) {
 
 float calc::norm(const cv::Point2f &point) {
     return std::sqrt(std::pow(point.x, 2) + std::pow(point.y, 2));
+}
+
+int toy_decoder::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
+                              std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
+    int val = 0;
+    int bit = 0;
+
+    for (auto it = begin; it != end; it++) {
+        int exp = std::distance(it, end) - 1;
+        bit =  ((*it).size < avg_size) ? 0 : 1;
+        val += bit * std::pow(2, exp);
+    }
+    return val;
 }

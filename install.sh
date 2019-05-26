@@ -39,4 +39,4 @@ sudo make install
 
 cd $HOME && rm -rf $HOME/install_stuff
 cd $loc && mkdir -p build && cd build 
-cmake .. && make -j2
+cmake -D AUTO_TEST=ON .. && make -j3
