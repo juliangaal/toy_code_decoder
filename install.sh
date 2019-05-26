@@ -11,7 +11,7 @@ if [ ! -d "fmt" ]; then
   git clone https://github.com/fmtlib/fmt.git
 fi
 cd fmt && mkdir -p build && cd build 
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake ..
 make -j4
 sudo make install
 
@@ -20,7 +20,7 @@ if [ ! -d "Catch2" ]; then
   git clone https://github.com/catchorg/Catch2.git
 fi
 cd Catch2
-cmake -Bbuild -H. -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release 
+cmake -Bbuild -H. -DBUILD_TESTING=OFF
 sudo cmake --build build/ --target install
 
 # install opencv
@@ -33,7 +33,7 @@ if [ ! -d "opencv" ]; then
   git clone https://github.com/opencv/opencv.git
 fi
 cd opencv && mkdir -p build && cd build
-cmake -DWITH_EIGEN=OFF ..
+cmake -D WITH_EIGEN=OFF ..
 make -j4 
 sudo make install
 
