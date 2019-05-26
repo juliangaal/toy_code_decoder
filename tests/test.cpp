@@ -35,6 +35,20 @@ TEST_CASE("Test vector between two points", "[test_connecting_vector]") {
     REQUIRE(std::abs(vec2.x - (-0.5547)) < 0.01f);
     REQUIRE(std::abs(vec2.y - (-0.83205)) < 0.01f);
     REQUIRE(calc::norm(vec2) == 1.0);
+
+    auto e = cv::Point2f(2, -2);
+    auto f = cv::Point2f(2, -5);
+    auto vec3 = geo::connecting_vector(e, f);
+
+    REQUIRE(vec3.x == 0.f);
+    REQUIRE(vec3.y == -1.f);
+    REQUIRE(calc::norm(vec3) == 1.0);
+
+    auto vec4 = geo::connecting_vector(f, e);
+
+    REQUIRE(vec4.x == 0.f);
+    REQUIRE(vec4.y == 1.f);
+    REQUIRE(calc::norm(vec4) == 1.0);
 }
 
 TEST_CASE("Test vector decoder", "[test_vector_decoder]") {
@@ -144,7 +158,7 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
     decoder.save_img("code_diff_sizes_rotated.jpg");
 
     decoder.rotate_keypoints(units::Degrees(img_rotation));
-    
+
     std::tie(decoded_point, result) = decoder.decode();
     REQUIRE(decoded_point.x == 5);
     REQUIRE(decoded_point.y == 10);
