@@ -123,7 +123,6 @@ std::tuple<cv::Point2i, bool> ToyDecoder::decode() {
     std::sort(this->keypoints.begin(), separator_it, [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
     std::sort(separator_it, this->keypoints.end(), [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
 
-    // TODO decoding? Test with size
     cv::Point2i p{0, 0};
     p.x = util::decode(this->keypoints.cbegin(), separator_it, avg_size);
     p.y = util::decode(separator_it, this->keypoints.cend(), avg_size);
