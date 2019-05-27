@@ -34,4 +34,4 @@ add_executable(import_test main.cpp)
 target_link_libraries(import_test PRIVATE ToyDecoder::toy_decoder)
 ```
 
-Build [![CircleCI](https://circleci.com/gh/juliangaal/toy_decoder.svg?style=svg)](https://circleci.com/gh/juliangaal/toy_decoder) to install all necessary components
+Build [![CircleCI](https://circleci.com/gh/juliangaal/toy_decoder.svg?style=svg)](https://circleci.com/gh/juliangaal/toy_decoder) tested on Ubuntu 16.04. To install all necessary components run the [installation scripts](scripts/install.sh)
