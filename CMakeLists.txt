@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.9)
 project(ToyDecoder VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 option(AUTO_TEST "Enables Tests Post build" OFF)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.0 REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
 find_package(Catch2 REQUIRED)

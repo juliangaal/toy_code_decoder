@@ -37,15 +37,15 @@ public:
 
     std::tuple<cv::Point2i, bool> decode();
 
-    void save_img(std::string name);
+    void save_img(std::string name = "output.jpg");
 
-    void open_img(std::string name);
+    void open_img(std::string name = "img");
 private:
-    cv::Mat &img;
-    cv::SimpleBlobDetector::Params params;
-    std::vector<cv::KeyPoint> keypoints;
-    cv::KeyPoint orientation_point;
-    float avg_size;
+    cv::Mat &_img;
+    cv::SimpleBlobDetector::Params _params;
+    std::vector<cv::KeyPoint> _keypoints;
+    cv::KeyPoint _orientation_point;
+    float _avg_size;
 };
 
 }
