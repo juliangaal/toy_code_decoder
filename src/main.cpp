@@ -49,5 +49,26 @@ int main(int argc, char **argv) {
     fmt::print("Rotation: {}\n", orientation);
     std::tie(decoded_point, result) = decoder.decode();
 
+    // Experiment, hough transform
+    // Read the image as gray-scale
+    cv::Mat img = imread("../pics/rect_bw_90.jpg", cv::COLOR_GRAY2BGR);
+//// Convert to gray-scale
+//    cv::cvtColor(img);
+// Store the edges
+    cv::Mat edges;
+// Find the edges in the image using canny detector
+    Canny(img, edges, 50, 200);
+// Create a vector to store lines of the image
+    std::vector<cv::Vec4i> lines;
+// Apply Hough Transform
+    cv::HoughLinesP(edges, lines, 1, CV_PI/180, 100, 50, 10);
+// Draw lines on the image
+    for (size_t i=0; i<lines.size(); i++) {
+        cv::Vec4i l = lines[i];
+        line(img, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(255, 0, 0), 3, cv::LINE_AA);
+    }
+// Show result image
+    imshow("Result Image", img);
+    cv::waitKey(0);
     return 0;
 }

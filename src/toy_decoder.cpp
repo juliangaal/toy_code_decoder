@@ -38,6 +38,7 @@ ToyDecoder::ToyDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : im
     keypoints.reserve(10);
 }
 
+// based on simple blob detector
 void ToyDecoder::calculate_keypoints(Mark_Keypoints mark) {
     // Set up detector with params and detect
     cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
