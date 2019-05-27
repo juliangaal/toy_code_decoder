@@ -7,39 +7,6 @@
 #include <sstream>
 #include <string>
 
-#define ASSERT_DIFF( to_check, to_subt, diff ) {                    \
-  if( !( std::abs((to_check) - (to_subt)) < (diff) ) ) {            \
-    std::stringstream ss;                                           \
-    ss << "abs(" << (to_check) << " - " << (to_subt) << ")";
-    throw std::runtime_error(   std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-                              + std::string( ": " )                 \
-                              + ss.str()                            \
-                              + std::string( " >= " )               \
-                              + std::to_string( ( diff ) )          \
-    );                                                              \
-  }                                                                 \
-}
-
-#define ASSERT_EQUAL( x, y ) {                                      \
-  if( ( x ) != ( y ) )                                              \
-  {                                                                 \
-    throw std::runtime_error(   std::string( __FILE__ )             \
-                              + std::string( ":" )                  \
-                              + std::to_string( __LINE__ )          \
-                              + std::string( " in " )               \
-                              + std::string( __PRETTY_FUNCTION__ )  \
-                              + std::string( ": " )                 \
-                              + std::to_string( ( x ) )             \
-                              + std::string( " != " )               \
-                              + std::to_string( ( y ) )             \
-    );                                                              \
-  }                                                                 \
-}
-
 using namespace toy_decoder::util;
 
 TEST_CASE("Test rotation/rotation matrix", "[test_rotation]") {
