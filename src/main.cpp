@@ -2,7 +2,6 @@
 // Created by julian on 5/26/19.
 //
 
-#include <boost/filesystem.hpp>
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
 #include <toy_decoder/util.hpp>
@@ -12,16 +11,10 @@
 #include <tuple>
 
 using namespace toy_decoder;
-namespace fs = boost::filesystem;
 
 int main(int argc, char **argv) {
     if (argc < 2) {
         fmt::print("NO file argument!\n");
-        return -1;
-    }
-
-    if (!fs::exists(argv[1])) {
-        fmt::print("File not found\n");
         return -1;
     }
 

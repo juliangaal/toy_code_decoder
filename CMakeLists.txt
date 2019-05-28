@@ -8,7 +8,6 @@ option(AUTO_TEST "Enables Tests Post build" OFF)
 
 find_package(OpenCV 4.0 REQUIRED)
 find_package(fmt REQUIRED)
-find_package(Boost COMPONENTS filesystem system REQUIRED)
 find_package(Catch2 REQUIRED)
 
 enable_testing()
@@ -29,8 +28,6 @@ target_include_directories(main PRIVATE include)
 target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
 target_link_libraries(main PRIVATE
                       ${OpenCV_LIBS}
-                      ${Boost_SYSTEM_LIBRARY}
-                      ${Boost_FILESYSTEM_LIBRARY}
                       fmt::fmt
                       toy_decoder)
 
