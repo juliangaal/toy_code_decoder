@@ -55,6 +55,11 @@ if (AUTO_TEST)
     )
 endif ()
 
+# generate docs
+add_custom_target(doc)
+add_custom_command(TARGET doc
+                    COMMAND cd ${PROJECT_SOURCE_DIR}/docs && doxygen Doxyfile && moxygen .)
+
 install(TARGETS toy_decoder
         EXPORT ${PROJECT_NAME}Targets
         ARCHIVE DESTINATION lib
