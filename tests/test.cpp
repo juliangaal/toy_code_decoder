@@ -26,9 +26,9 @@ TEST_CASE("Test vector between two points", "[test_connecting_vector]") {
     auto b = cv::Point2f(0, 0);
     auto vec1 = geo::connecting_vector(a, b);
 
-    REQUIRE(vec1.x == -1.f);
-    REQUIRE(vec1.y == 0.f);
-    REQUIRE(calc::norm(vec1) == 1.0);
+    REQUIRE(vec1.x == -1.0f);
+    REQUIRE(vec1.y == 0.0f);
+    REQUIRE(calc::norm(vec1) == 1.0f);
 
     auto c = cv::Point2f(4, 6);
     auto d = cv::Point2f(0, 0);
@@ -41,15 +41,15 @@ TEST_CASE("Test vector between two points", "[test_connecting_vector]") {
     auto f = cv::Point2f(2, -5);
     auto vec3 = geo::connecting_vector(e, f);
 
-    REQUIRE(vec3.x == 0.f);
-    REQUIRE(vec3.y == -1.f);
-    REQUIRE(calc::norm(vec3) == 1.0);
+    REQUIRE(vec3.x == 0.0f);
+    REQUIRE(vec3.y == -1.0f);
+    REQUIRE(calc::norm(vec3) == 1.0f);
 
     auto vec4 = geo::connecting_vector(f, e);
 
-    REQUIRE(vec4.x == 0.f);
-    REQUIRE(vec4.y == 1.f);
-    REQUIRE(calc::norm(vec4) == 1.0);
+    REQUIRE(vec4.x == 0.0f);
+    REQUIRE(vec4.y == 1.0f);
+    REQUIRE(calc::norm(vec4) == 1.0f);
 }
 
 TEST_CASE("Test vector decoder", "[test_vector_decoder]") {
