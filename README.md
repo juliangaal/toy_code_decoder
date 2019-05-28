@@ -43,11 +43,16 @@ int main(void) {
     
     decoder.calculate_keypoints();
     std::tie(orientation, result) = decoder.calculate_orientation();
+    if (!worked)
+        return 1;
+
     decoder.rotate_keypoints(util::units::Degrees(orientation));
+    std::tie(decoded_point, worked) = decoder.decode();
+    if (!worked)
+        return 1;
+    
     fmt::print("Rotation: {}\n", orientation);
-    std::tie(decoded_point, result) = decoder.decode();
-    fmt::print("Decoded: ({},{}), result: {}", decoded_point.x, decoded_point.y, result);
-    return 0;
+    fmt::print("Decoded: ({},{}), result: {}\n", decoded_point.x, decoded_point.y, worked);
 } 
 ```
 

@@ -30,17 +30,21 @@ int main(int argc, char **argv) {
 
     float orientation;
     cv::Point2i decoded_point;
-    bool result;
+    bool worked;
 
     decoder.calculate_keypoints(Draw::YES);
-    std::tie(orientation, result) = decoder.calculate_orientation(Draw::YES);
+    std::tie(orientation, worked) = decoder.calculate_orientation(Draw::YES);
+    if (!worked)
+        return 1;
     decoder.open_img("before");
     decoder.rotate_img(util::units::Degrees(orientation));
     decoder.save_img("main.jpg");
     decoder.open_img("after");
     decoder.rotate_keypoints(util::units::Degrees(orientation));
     fmt::print("Rotation: {}\n", orientation);
-    std::tie(decoded_point, result) = decoder.decode();
-    fmt::print("Decoded: ({},{}), result: {}", decoded_point.x, decoded_point.y, result);
+    std::tie(decoded_point, worked) = decoder.decode();
+    if (!worked)
+        return 1;
+    fmt::print("Decoded: ({},{}), result: {}", decoded_point.x, decoded_point.y, worked);
     return 0;
 }
