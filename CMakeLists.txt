@@ -6,9 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 option(AUTO_TEST "Enables Tests Post build" OFF)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.0 REQUIRED)
 find_package(fmt REQUIRED)
-find_package(Boost COMPONENTS filesystem system REQUIRED)
 find_package(Catch2 REQUIRED)
 
 enable_testing()
@@ -19,7 +18,7 @@ add_library(toy_decoder ${SOURCES} ${HEADERS})
 target_include_directories(toy_decoder PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
-target_compile_options(toy_decoder PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+target_compile_options(toy_decoder PRIVATE -Wall -Wextra -Weffc++ -pedantic -ffast-math -Werror)
 target_link_libraries(toy_decoder PUBLIC
                       ${OpenCV_LIBS}
                       fmt::fmt)
@@ -29,8 +28,6 @@ target_include_directories(main PRIVATE include)
 target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
 target_link_libraries(main PRIVATE
                       ${OpenCV_LIBS}
-                      ${Boost_SYSTEM_LIBRARY}
-                      ${Boost_FILESYSTEM_LIBRARY}
                       fmt::fmt
                       toy_decoder)
 
@@ -44,6 +41,7 @@ target_link_libraries(unit_test PRIVATE
                       Catch2::Catch2
                       toy_decoder)
 
+# enable target test when AUTO_TEST=ON
 message(STATUS "AUTO_TEST is ${AUTO_TEST}")
 if (AUTO_TEST)
     add_custom_command(
@@ -55,6 +53,12 @@ if (AUTO_TEST)
     )
 endif ()
 
+# generate docs
+add_custom_target(doc)
+add_custom_command(TARGET doc
+                   COMMAND cd ${PROJECT_SOURCE_DIR}/docs && doxygen Doxyfile && moxygen .)
+
+# install
 install(TARGETS toy_decoder
         EXPORT ${PROJECT_NAME}Targets
         ARCHIVE DESTINATION lib

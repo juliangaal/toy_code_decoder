@@ -1,23 +1,24 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 #include <toy_decoder/toy_decoder.hpp>
+#include <toy_decoder/util.hpp>
 #include <opencv2/opencv.hpp>
-#include <toy_decoder/util.hpp>
 #include <fmt/format.h>
-#include <toy_decoder/util.hpp>
+#include <sstream>
+#include <string>
 
 using namespace toy_decoder::util;
 
 TEST_CASE("Test rotation/rotation matrix", "[test_rotation]") {
     auto in = cv::Point2f(1, 0);
     calc::rotate(in, units::Degrees(90.0));
-    REQUIRE(std::abs(in.x - 0) < 0.00001);
-    REQUIRE(std::abs(in.y - 1) < 0.00001);
+    REQUIRE(in.x == Approx(0.f).margin(0.0001));
+    REQUIRE(in.y == Approx(1.f).margin(0.0001));
 
     auto in2 = cv::Point2f(1, 0);
     calc::rotate(in2, units::Degrees(-90.0));
-    REQUIRE(std::abs(in2.x - 0) < 0.00001);
-    REQUIRE(std::abs(in2.y - (-1)) < 0.00001);
+    REQUIRE(in2.x == Approx(0.f).margin(0.0001));
+    REQUIRE(in2.y == Approx(-1.f).margin(0.0001));
 }
 
 TEST_CASE("Test vector between two points", "[test_connecting_vector]") {
@@ -25,30 +26,30 @@ TEST_CASE("Test vector between two points", "[test_connecting_vector]") {
     auto b = cv::Point2f(0, 0);
     auto vec1 = geo::connecting_vector(a, b);
 
-    REQUIRE(vec1.x == -1.f);
-    REQUIRE(vec1.y == 0.f);
-    REQUIRE(calc::norm(vec1) == 1.0);
+    REQUIRE(vec1.x == Approx(-1.0f).margin(0.0001));
+    REQUIRE(vec1.y == Approx(0.0f).margin(0.0001));
+    REQUIRE(calc::norm(vec1) == Approx(1.0f).margin(0.0001));
 
     auto c = cv::Point2f(4, 6);
     auto d = cv::Point2f(0, 0);
     auto vec2 = geo::connecting_vector(c, d);
-    REQUIRE(std::abs(vec2.x - (-0.5547)) < 0.01f);
-    REQUIRE(std::abs(vec2.y - (-0.83205)) < 0.01f);
-    REQUIRE(calc::norm(vec2) == 1.0);
+    REQUIRE(vec2.x == Approx(-0.5547).margin(0.0001));
+    REQUIRE(vec2.y == Approx(-0.83205).margin(0.0001));
+    REQUIRE(calc::norm(vec2) == Approx(1.0f).margin(0.0001));
 
     auto e = cv::Point2f(2, -2);
     auto f = cv::Point2f(2, -5);
     auto vec3 = geo::connecting_vector(e, f);
 
-    REQUIRE(vec3.x == 0.f);
-    REQUIRE(vec3.y == -1.f);
-    REQUIRE(calc::norm(vec3) == 1.0);
+    REQUIRE(vec3.x == Approx(0.0f).margin(0.0001));
+    REQUIRE(vec3.y == Approx(-1.0f).margin(0.0001));
+    REQUIRE(calc::norm(vec3) == Approx(1.0f).margin(0.0001));
 
     auto vec4 = geo::connecting_vector(f, e);
 
-    REQUIRE(vec4.x == 0.f);
-    REQUIRE(vec4.y == 1.f);
-    REQUIRE(calc::norm(vec4) == 1.0);
+    REQUIRE(vec4.x == Approx(0.0f).margin(0.0001));
+    REQUIRE(vec4.y == Approx(1.0f).margin(0.0001));
+    REQUIRE(calc::norm(vec4) == Approx(1.0f).margin(0.0001));
 }
 
 TEST_CASE("Test vector decoder", "[test_vector_decoder]") {
@@ -79,13 +80,13 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
-        // should detect ~45, in this case 43
-        REQUIRE(std::abs(orientation - 43.94f) < 0.01f);
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        // should detect ~45, in this case 43.94
+        REQUIRE(orientation == Approx(45).epsilon(0.03));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.save_img(file + "_rotated.jpg");
@@ -93,13 +94,13 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_90";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~90, in this case 89.25
-        REQUIRE(std::abs(orientation - 89.25f) < 0.01f);
+        REQUIRE(orientation == Approx(90.0f).epsilon(0.01));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.save_img(file + "_rotated.jpg");
@@ -107,13 +108,13 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_neg45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-45, in this case -44.47
-        REQUIRE(std::abs(orientation - (-44.47f)) < 0.01f);
+        REQUIRE(orientation == Approx(-45).epsilon(0.015));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.save_img(file + "_rotated.jpg");
@@ -121,20 +122,20 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_neg135";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-135, in this case -135.5
-        REQUIRE(std::abs(orientation - (-135.5f)) < 0.01f);
+        REQUIRE(orientation == Approx(-135.f).epsilon(0.005));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.save_img(file + "_rotated.jpg");
     }
 }
 
-TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
+TEST_CASE("Test decoder values", "[test_decoder_values]") {
     using namespace toy_decoder;
     float orientation;
     cv::Point2i decoded_point;
@@ -145,13 +146,13 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_neg135";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-135, in this case -135.5
-        REQUIRE(std::abs(orientation - (-135.5f)) < 0.01f);
+        REQUIRE(orientation == Approx(-135.f).epsilon(0.005));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.rotate_keypoints(units::Degrees(orientation));
@@ -166,13 +167,13 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_neg45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-45, in this case -44.47
-        REQUIRE(std::abs(orientation - (-44.47f)) < 0.01f);
+        REQUIRE(orientation == Approx(-45.0f).epsilon(0.015));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.rotate_keypoints(units::Degrees(orientation));
@@ -187,13 +188,13 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_90";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~90, in this case 89.25
-        REQUIRE(std::abs(orientation - 89.25f) < 0.01f);
+        REQUIRE(orientation == Approx(90.f).epsilon(0.01));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.rotate_keypoints(units::Degrees(orientation));
@@ -204,14 +205,17 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
     }
 
     {
+        // this image encodes 45 degrees orientation and
+        // 1010: 10
+        // 0101: 5
         std::string file = "rect_bw_45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~45, in this case 43.94
-        REQUIRE(std::abs(orientation - 43.94f) < 0.01f);
+        REQUIRE(orientation == Approx(45.f).epsilon(0.03));
 
         decoder.rotate_img(units::Degrees(orientation));
         decoder.rotate_keypoints(units::Degrees(orientation));
@@ -220,4 +224,11 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         REQUIRE(decoded_point.x == 10);
         REQUIRE(decoded_point.y == 5);
     }
+}
+
+TEST_CASE("Various", "[various]") {
+    using namespace toy_decoder::util::units;
+    units::Degrees x = 90.0_deg;
+    REQUIRE(x.to_rad() == Approx(PIf/2.0).margin(0.0001));
+    REQUIRE(x.to_deg() == Approx(90.0f).margin(0.0001));
 }
