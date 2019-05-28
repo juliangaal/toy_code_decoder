@@ -14,6 +14,13 @@ namespace toy_decoder {
 
 namespace util {
 
+template <typename T, typename S>
+constexpr T to(const S&& val) {
+    return static_cast<T>(val);
+}
+
+constexpr static float PIf = static_cast<float>(M_PI);
+
 int decode(std::vector<cv::KeyPoint>::const_iterator begin,
            std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
 
@@ -28,7 +35,7 @@ public:
     ~Degrees() = default;
 
     inline constexpr float to_rad() {
-        return this->amount * M_PI / 180.0;
+        return this->amount * PIf / 180.0f;
     }
 
     inline constexpr float to_deg() {
@@ -39,29 +46,12 @@ private:
     float amount;
 };
 
+constexpr Degrees operator "" _deg(long double deg)
+{
+    return Degrees{static_cast<float>(deg)};
+}
+
 } // namespace toy_decoder::util::units
-
-namespace color {
-
-const static cv::Vec3b RGBRED = cv::Vec3b{255, 0, 0};
-const static cv::Vec3b RGBGREEN = cv::Vec3b{0, 255, 0};
-const static cv::Vec3b RGBBLUE = cv::Vec3b{0, 0, 255};
-const static cv::Vec3b RGBBLACK = cv::Vec3b{0, 0, 0};
-
-enum Color {
-    RED,
-    GREEN,
-    BLUE,
-    BLACK,
-};
-
-bool same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float tolerance = 30.0);
-
-bool is_black(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 30.0);
-
-bool is_red(const cv::Mat &im, const cv::KeyPoint &point, float tolerance = 30.0);
-
-} // namespace toy_decoder::util::color
 
 namespace geo {
 

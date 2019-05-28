@@ -205,6 +205,9 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
     }
 
     {
+        // this image encodes 45 degrees orientation and
+        // 1010: 10
+        // 0101: 5
         std::string file = "rect_bw_45";
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
@@ -221,4 +224,11 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         REQUIRE(decoded_point.x == 10);
         REQUIRE(decoded_point.y == 5);
     }
+}
+
+TEST_CASE("Various", "[various]") {
+    using namespace toy_decoder::util::units;
+    units::Degrees x = 90.0_deg;
+    REQUIRE(x.to_rad() == PIf/2.0);
+    REQUIRE(x.to_deg() == 90.0);
 }
