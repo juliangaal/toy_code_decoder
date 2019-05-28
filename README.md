@@ -16,7 +16,7 @@ rotation invariant toy decoder for codes in this style:
 * [fmt](https://github.com/fmtlib/fmt)
 * [Catch](https://github.com/catchorg/Catch2)
 
-Build [![CircleCI](https://circleci.com/gh/juliangaal/hw/tree/master.svg?style=svg)](https://circleci.com/gh/juliangaal/hw/tree/master) for ubuntu 16.04, run the [installation script](./install.sh) to install all necessary components, if they aren't on your system
+Build [![CircleCI](https://circleci.com/gh/juliangaal/toy_decoder.svg?style=svg)](https://circleci.com/gh/juliangaal/toy_decoder) for ubuntu 16.04, run the [installation script](./install.sh) to install all necessary components, if they aren't on your system
 
 #### Install
 ```bash
