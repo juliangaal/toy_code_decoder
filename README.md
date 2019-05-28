@@ -2,9 +2,7 @@
 rotation invariant toy decoder for codes in this style:  
 
 <p float="left">
-  <img src="./pics/rect_bw_90.jpg" width="200" />
-  <img src="./pics/rect_bw_neg45.jpg" width="200" />
-  <img src="./pics/rect_bw_neg90.jpg" width="200" />
+  <img src="./pics/rect_bw_show_off.jpg" width="200" />
 </p>
 
 #### Properties
