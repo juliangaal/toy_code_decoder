@@ -19,7 +19,7 @@ add_library(toy_decoder ${SOURCES} ${HEADERS})
 target_include_directories(toy_decoder PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
-target_compile_options(toy_decoder PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+target_compile_options(toy_decoder PRIVATE -Wall -Wextra -Weffc++ -pedantic -ffast-math -Werror)
 target_link_libraries(toy_decoder PUBLIC
                       ${OpenCV_LIBS}
                       fmt::fmt)
