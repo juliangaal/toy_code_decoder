@@ -44,6 +44,7 @@ target_link_libraries(unit_test PRIVATE
                       Catch2::Catch2
                       toy_decoder)
 
+# enable target test when AUTO_TEST=ON
 message(STATUS "AUTO_TEST is ${AUTO_TEST}")
 if (AUTO_TEST)
     add_custom_command(
@@ -58,8 +59,9 @@ endif ()
 # generate docs
 add_custom_target(doc)
 add_custom_command(TARGET doc
-                    COMMAND cd ${PROJECT_SOURCE_DIR}/docs && doxygen Doxyfile && moxygen .)
+                   COMMAND cd ${PROJECT_SOURCE_DIR}/docs && doxygen Doxyfile && moxygen .)
 
+# install
 install(TARGETS toy_decoder
         EXPORT ${PROJECT_NAME}Targets
         ARCHIVE DESTINATION lib

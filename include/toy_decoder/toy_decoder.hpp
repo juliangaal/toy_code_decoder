@@ -12,10 +12,11 @@
 
 namespace toy_decoder {
 
+
 /**
- * Mark keypoints in image with Mark_KeyPoints::YES
+ * Draw keypoints/orientation in image with Draw::YES
  */
-enum Mark_Keypoints {
+enum Draw {
     YES,
     NO,
 };
@@ -45,13 +46,13 @@ public:
      * Calculates keypoints
      * @param mark: marks keypoint when chosen (optional)
      */
-    void calculate_keypoints(Mark_Keypoints mark);
+    void calculate_keypoints(Draw mark = NO);
 
     /**
      * Calculates orientation from keypoint
      * @return orientation, success (true if successful)
      */
-    std::tuple<float, bool> calculate_orientation();
+    std::tuple<float, bool> calculate_orientation(Draw mark = NO);
 
     /**
      * Rotate keypoints by specified amout

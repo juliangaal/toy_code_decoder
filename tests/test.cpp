@@ -83,8 +83,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~45, in this case 43
         REQUIRE(std::abs(orientation - 43.94f) < 0.01f);
 
@@ -97,8 +97,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~90, in this case 89.25
         REQUIRE(std::abs(orientation - 89.25f) < 0.01f);
 
@@ -111,8 +111,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-45, in this case -44.47
         REQUIRE(std::abs(orientation - (-44.47f)) < 0.01f);
 
@@ -125,8 +125,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-135, in this case -135.5
         REQUIRE(std::abs(orientation - (-135.5f)) < 0.01f);
 
@@ -149,8 +149,8 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-135, in this case -135.5
         REQUIRE(std::abs(orientation - (-135.5f)) < 0.01f);
 
@@ -170,8 +170,8 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~-45, in this case -44.47
         REQUIRE(std::abs(orientation - (-44.47f)) < 0.01f);
 
@@ -191,8 +191,8 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~90, in this case 89.25
         REQUIRE(std::abs(orientation - 89.25f) < 0.01f);
 
@@ -212,8 +212,8 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
-        decoder.calculate_keypoints(Mark_Keypoints::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation();
+        decoder.calculate_keypoints(Draw::YES);
+        std::tie(orientation, result) = decoder.calculate_orientation(YES);
         // should detect ~45, in this case 43.94
         REQUIRE(std::abs(orientation - 43.94f) < 0.01f);
 

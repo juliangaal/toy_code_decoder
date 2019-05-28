@@ -39,8 +39,8 @@ int main(int argc, char **argv) {
     cv::Point2i decoded_point;
     bool result;
 
-    decoder.calculate_keypoints(Mark_Keypoints::YES);
-    std::tie(orientation, result) = decoder.calculate_orientation();
+    decoder.calculate_keypoints(Draw::YES);
+    std::tie(orientation, result) = decoder.calculate_orientation(Draw::YES);
     decoder.open_img("before");
     decoder.rotate_img(util::units::Degrees(orientation));
     decoder.save_img("main.jpg");
@@ -48,6 +48,6 @@ int main(int argc, char **argv) {
     decoder.rotate_keypoints(util::units::Degrees(orientation));
     fmt::print("Rotation: {}\n", orientation);
     std::tie(decoded_point, result) = decoder.decode();
-
+    fmt::print("Decoded: ({},{}), result: {}", decoded_point.x, decoded_point.y, result);
     return 0;
 }
