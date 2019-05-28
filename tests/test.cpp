@@ -80,7 +80,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
@@ -94,7 +94,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_90";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
@@ -108,7 +108,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_neg45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
@@ -122,7 +122,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_neg135";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
@@ -135,7 +135,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     }
 }
 
-TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
+TEST_CASE("Test decoder values", "[test_decoder_values]") {
     using namespace toy_decoder;
     float orientation;
     cv::Point2i decoded_point;
@@ -146,7 +146,7 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_neg135";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
@@ -167,7 +167,7 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_neg45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
@@ -188,7 +188,7 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_90";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
@@ -209,7 +209,7 @@ TEST_CASE("Test decoder vallues", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_45";
-        cv::Mat im = cv::imread(("../pics/" + file + ".jpg"), cv::IMREAD_COLOR);
+        cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         ToyDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
