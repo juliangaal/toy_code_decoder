@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -e # exit on first fail
 sudo add-apt-repository -y universe
 sudo apt-get update -y
@@ -38,5 +39,5 @@ make -j4
 sudo make install
 
 cd $HOME && rm -rf $HOME/install_stuff
-cd $loc && mkdir -p build && cd build 
+cd $loc && mkdir -p build && cd build
 cmake -DCOMPILE_TEST=ON -DENABLE_AUTO_TEST=ON -DCMAKE_BUILD_TYPE=Release .. && make -j3

@@ -79,7 +79,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     bool result;
 
     {
-        std::string file = "rect_bw_45";
+        std::string file = "rect_bw_16_45_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -93,7 +93,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     }
 
     {
-        std::string file = "rect_bw_90";
+        std::string file = "rect_bw_16_90_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -107,7 +107,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     }
 
     {
-        std::string file = "rect_bw_neg45";
+        std::string file = "rect_bw_16_neg45_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -121,7 +121,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     }
 
     {
-        std::string file = "rect_bw_neg135";
+        std::string file = "rect_bw_16_neg135_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -145,7 +145,7 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // this image encodes -135 degrees orientation and
         // 1010: 10
         // 0101: 5
-        std::string file = "rect_bw_neg135";
+        std::string file = "rect_bw_16_neg135_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -158,15 +158,15 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         decoder.rotate_keypoints(units::Degrees(orientation));
 
         std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 10);
-        REQUIRE(decoded_point.y == 5);
+        REQUIRE(decoded_point.x == 165);
+        REQUIRE(decoded_point.y == 165);
     }
 
     {
         // this image encodes -45 degrees orientation and
         // 1010: 10
         // 0101: 5
-        std::string file = "rect_bw_neg45";
+        std::string file = "rect_bw_16_neg45_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -179,15 +179,15 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         decoder.rotate_keypoints(units::Degrees(orientation));
 
         std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 10);
-        REQUIRE(decoded_point.y == 5);
+        REQUIRE(decoded_point.x == 165);
+        REQUIRE(decoded_point.y == 165);
     }
 
     {
         // this image encodes 90 degrees orientation and
         // 1010: 10
         // 0101: 5
-        std::string file = "rect_bw_90";
+        std::string file = "rect_bw_16_90_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -200,15 +200,15 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         decoder.rotate_keypoints(units::Degrees(orientation));
 
         std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 10);
-        REQUIRE(decoded_point.y == 5);
+        REQUIRE(decoded_point.x == 165);
+        REQUIRE(decoded_point.y == 165);
     }
 
     {
         // this image encodes 45 degrees orientation and
         // 1010: 10
         // 0101: 5
-        std::string file = "rect_bw_45";
+        std::string file = "rect_bw_16_45_xlarge";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
         NotQRCodeDecoder decoder(im);
 
@@ -221,8 +221,8 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         decoder.rotate_keypoints(units::Degrees(orientation));
 
         std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 10);
-        REQUIRE(decoded_point.y == 5);
+        REQUIRE(decoded_point.x == 165);
+        REQUIRE(decoded_point.y == 165);
     }
 }
 

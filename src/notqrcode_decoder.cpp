@@ -52,7 +52,7 @@ void NotQRCodeDecoder::calculate_keypoints(Draw draw) {
     switch (draw) {
         case YES:
             for (const auto &point: _keypoints) {
-                cv::circle(_img, point.pt, 2, cv::Scalar(0, 0, 255), -1);
+                cv::circle(_img, point.pt, 2, cv::Scalar(255, 255, 255), -1);
             }
             break;
         case NO:
@@ -64,8 +64,8 @@ void NotQRCodeDecoder::calculate_keypoints(Draw draw) {
 std::tuple<float, bool> NotQRCodeDecoder::calculate_orientation(Draw draw) {
     using namespace notqrcode::util;
 
-    if (_keypoints.size() != 9) {
-        fmt::print("Didn't get 9 keypoints: {}\n", _keypoints.size());
+    if (_keypoints.size() != 17) {
+        fmt::print("Didn't get 17 keypoints: {}\n", _keypoints.size());
         return std::make_tuple(0.0f, false);
     }
 
@@ -105,7 +105,7 @@ std::tuple<float, bool> NotQRCodeDecoder::calculate_orientation(Draw draw) {
             cv::Point2f q(_img.cols, _img.rows);
             p.y = -(_orientation_point.pt.x - p.x) * slope + -_orientation_point.pt.y;
             q.y = -(centroid.x - q.x) * slope + -centroid.y;
-            cv::line(_img, p, q, cv::Scalar(0, 0, 255), 2, 8, 0);
+            cv::line(_img, p, q, cv::Scalar(128, 128, 128), 2, 8, 0);
             break;
         }
         case NO:
@@ -139,28 +139,73 @@ void NotQRCodeDecoder::rotate_keypoints(notqrcode::util::units::Degrees degrees)
 }
 
 std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
-    if (_keypoints.size() != 8) {
+    if (_keypoints.size() != 16) {
         fmt::print("Invalid number of keypoints detected: {}", _keypoints.size());
         return std::make_tuple(cv::Point2i{}, false);
     }
 
-    const auto separator_it = std::partition(_keypoints.begin(), _keypoints.end(), [&](const auto &p) {
-        // line is rotated => any points below/above points below to either bits
-        return p.pt.y > _orientation_point.pt.y;
-    });
-
+    // line is rotated => any points below/above points below to either bits
+    // we are decoding 16 bits, 8 per "points over orientation line"
+    // this separator is the first right down the horizontal line
+    const auto h_separator_it = util::partition_by_height(_keypoints.begin(), _keypoints.end(), _orientation_point.pt.y);
     // if separator fails for any reason, return
-    if (separator_it == _keypoints.end()) {
+    if (h_separator_it == _keypoints.end()) {
         fmt::print("Can't separate keypoints\n");
         return std::make_tuple(cv::Point2i{}, false);
     }
 
-    // Sort keypoints for bit reading: first half of vector will be keypoints above
-    std::sort(_keypoints.begin(), separator_it, [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
-    std::sort(separator_it, _keypoints.end(), [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; });
+    // centroid of each x bits and y bits
+    cv::Point2f x_centroid{};
+    cv::Point2f y_centroid{};
 
-    cv::Point2i p{util::decode(_keypoints.cbegin(), separator_it, _avg_size),
-                  util::decode(separator_it, _keypoints.cend(), _avg_size)};
+    std::for_each(_keypoints.begin(), h_separator_it, [&](const auto& p){
+        x_centroid.x += p.pt.x;
+        x_centroid.y += p.pt.y;
+    });
+
+    float x_bits_num = std::distance(_keypoints.begin(), h_separator_it);
+    x_centroid.x /= x_bits_num;
+    x_centroid.y /= x_bits_num;
+
+    std::for_each(h_separator_it, _keypoints.end(), [&](const auto& p){
+        y_centroid.x += p.pt.x;
+        y_centroid.y += p.pt.y;
+    });
+
+    float y_bits_num = std::distance(_keypoints.begin(), h_separator_it);
+    y_centroid.x /= y_bits_num;
+    y_centroid.y /= y_bits_num;
+
+    // this separator separates the 2 levels of bits above horizontal line, so the x bits
+    const auto x_separator_it = util::partition_by_height(_keypoints.begin(), h_separator_it, x_centroid.y);
+    // if separator fails for any reason, return
+    if (x_separator_it == _keypoints.end()) {
+        fmt::print("Can't separate keypoints x\n");
+        return std::make_tuple(cv::Point2i{}, false);
+    }
+
+    // this separator separates the 2 levels of bits below horizontal line, so the y bits
+    const auto y_separator_it = util::partition_by_height(h_separator_it, _keypoints.end(), y_centroid.y);
+    // if separator fails for any reason, return
+    if (y_separator_it == _keypoints.end()) {
+        fmt::print("Can't separate keypoints y\n");
+        return std::make_tuple(cv::Point2i{}, false);
+    }
+
+    // lambda helper function
+    auto point_further_left = [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; };
+
+    // Sort keypoints for x bits from left to right, left being the smallest after sorting
+    std::sort(_keypoints.begin(), x_separator_it, point_further_left);
+    std::sort(x_separator_it, h_separator_it, point_further_left);
+
+    // Sort keypoints for y bits from left to right, left being the smallest after sorting
+    std::sort(h_separator_it, y_separator_it, point_further_left);
+    std::sort(y_separator_it, _keypoints.end(), point_further_left);
+
+
+    cv::Point2i p{util::decode(_keypoints.cbegin(), h_separator_it, _avg_size),
+                  util::decode(h_separator_it, _keypoints.cend(), _avg_size)};
 
     return std::make_tuple(p, true);
 }

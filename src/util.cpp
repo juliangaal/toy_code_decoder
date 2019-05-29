@@ -32,7 +32,7 @@ float calc::norm(const cv::Point2f &point) {
 }
 
 int notqrcode::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
-                              std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
+                            std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
     int val = 0;
     int bit = 0;
 
@@ -43,4 +43,14 @@ int notqrcode::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
     }
 
     return val;
+}
+
+std::vector<cv::KeyPoint>::iterator
+notqrcode::util::partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end,
+                                     float heigth) {
+    const auto separator_it = std::stable_partition(begin, end, [&](const auto &p) {
+        return p.pt.y > heigth;
+    });
+
+    return separator_it;
 }
