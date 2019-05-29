@@ -2,7 +2,7 @@
 rotation invariant, experimental codes in this style:
 
 <p float="left">
-  <img src="./tests/pics/rect_bw_show_off.jpg" width="500" />
+  <img src="./tests/pics/rect_bw_16_0_xlarge.jpg" width="500" />
 </p>
 
 #### Properties
@@ -27,8 +27,8 @@ make && sudo make install
 ```
 
 #### Test
-setting `-DCOMPILE_TEST=ON` will compile tests and expose target `test` in the cmake Makefile. You can then either run `make test` in the build directory, or `ctest --verbose` for verbose output in case of test failures.
-setting `-DENABLE_AUTO_TEST=ON` will run unit test on every build, if enabled with above command
+* setting `-DCOMPILE_TEST=ON` will compile tests and expose target `test` in the cmake Makefile. You can then either run `make test` in the build directory, or `ctest --verbose` for verbose output in case of test failures.
+* setting `-DENABLE_AUTO_TEST=ON` will run unit test on every build, if enabled with above command
 
 ### Use
 Manual mode
