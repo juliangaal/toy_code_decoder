@@ -52,7 +52,7 @@ void ToyDecoder::calculate_keypoints(Draw draw) {
     switch (draw) {
         case YES:
             for (const auto &point: _keypoints) {
-                cv::circle(_img, point.pt, 2, cv::Scalar(255, 255, 255), -1);
+                cv::circle(_img, point.pt, 2, cv::Scalar(0, 0, 255), -1);
             }
             break;
         case NO:
@@ -91,13 +91,17 @@ std::tuple<float, bool> ToyDecoder::calculate_orientation(Draw draw) {
     float orientation = std::atan2(vec.y, vec.x) * (180.0f / PIf) * -1;
 
     switch (draw) {
-        case YES:
-
-            cv::line(_img,
-                    cv::Point2f(centroid.x, -centroid.y),
-                    cv::Point2f(_orientation_point.pt.x, -_orientation_point.pt.y),
-                    cv::Scalar(128, 128, 128), 2, 8, 0);
+        case YES: {
+            // transformation back into opencv coordinates, that's why they are so many negative numbers here
+            // -vec.y, -orientation_point.pt.y, -centroid.y ...
+            float slope = -vec.y / vec.x;
+            cv::Point2f p{};
+            cv::Point2f q(_img.cols, _img.rows);
+            p.y = -(_orientation_point.pt.x - p.x) * slope + -_orientation_point.pt.y;
+            q.y = -(centroid.x - q.x) * slope + -centroid.y;
+            cv::line(_img, p, q, cv::Scalar(0, 0, 255), 2, 8, 0);
             break;
+        }
         case NO:
         default:
             break;
