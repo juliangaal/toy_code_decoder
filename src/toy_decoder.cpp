@@ -64,6 +64,11 @@ void ToyDecoder::calculate_keypoints(Draw draw) {
 std::tuple<float, bool> ToyDecoder::calculate_orientation(Draw draw) {
     using namespace toy_decoder::util;
 
+    if (_keypoints.size() != 9) {
+        fmt::print("Didn't get 9 keypoints: {}\n", _keypoints.size());
+        return std::make_tuple(0.0f, false);
+    }
+
     // partition in bit points and orientation points
     std::sort(_keypoints.begin(), _keypoints.end(), [&](const auto &p1, const auto &p2) {
         return p1.size < p2.size;
@@ -94,6 +99,7 @@ std::tuple<float, bool> ToyDecoder::calculate_orientation(Draw draw) {
         case YES: {
             // transformation back into opencv coordinates, that's why they are so many negative numbers here
             // -vec.y, -orientation_point.pt.y, -centroid.y ...
+            // draws line across screen
             float slope = -vec.y / vec.x;
             cv::Point2f p{};
             cv::Point2f q(_img.cols, _img.rows);
