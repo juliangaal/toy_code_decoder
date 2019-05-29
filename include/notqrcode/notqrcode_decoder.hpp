@@ -2,16 +2,14 @@
 // Created by julian on 5/25/19.
 //
 
-#ifndef HWCPP_TOY_DECODER_HPP
-#define HWCPP_TOY_DECODER_HPP
+#ifndef NOT_QRCODE_DECODER_HPP
+#define NOT_QRCODE_DECODER_HPP
 
-#include <opencv2/opencv.hpp>
-#include <toy_decoder/util.hpp>
+#include <notqrcode/util.hpp>
 #include <vector>
 #include <tuple>
 
-namespace toy_decoder {
-
+namespace notqrcode {
 
 /**
  * Draw keypoints/orientation in image with Draw::YES
@@ -24,23 +22,23 @@ enum Draw {
 /**
  * Handles all operations necessary to decode Code (sample seen in README.md)
  */
-class ToyDecoder {
+class NotQRCodeDecoder {
 public:
     /*
      * Init with OpenCV image
      */
-    ToyDecoder(cv::Mat &img);
+    NotQRCodeDecoder(cv::Mat &img);
 
     /*
      * Init with OpenCV Image and custom Simpleblobdetector params
      */
-    ToyDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params);
+    NotQRCodeDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params);
 
     /// default constructor deleted
-    ToyDecoder() = delete;
+    NotQRCodeDecoder() = delete;
 
     /// default destructor
-    ~ToyDecoder() = default;
+    ~NotQRCodeDecoder() = default;
 
     /**
      * Calculates keypoints
@@ -58,13 +56,13 @@ public:
      * Rotate keypoints by specified amout
      * @param degrees amount to rotate
      */
-    void rotate_keypoints(toy_decoder::util::units::Degrees degrees);
+    void rotate_keypoints(notqrcode::util::units::Degrees degrees);
 
     /**
      * Rotate opencv image
      * @param degrees amount to rotate
      */
-    void rotate_img(toy_decoder::util::units::Degrees degrees);
+    void rotate_img(notqrcode::util::units::Degrees degrees);
 
     /**
      * Decodes code
@@ -98,4 +96,4 @@ private:
 
 }
 
-#endif //HWCPP_TOY_DECODER_HPP
+#endif //NOT_QRCODE_DECODER_HPP

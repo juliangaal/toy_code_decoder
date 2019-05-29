@@ -2,10 +2,10 @@
 // Created by julian on 5/24/19.
 //
 
-#include <toy_decoder/util.hpp>
+#include <notqrcode/util.hpp>
 #include <iostream>
 
-using namespace toy_decoder::util;
+using namespace notqrcode::util;
 
 geo::UnitVector geo::connecting_vector(const cv::Point2f &a, const cv::Point2f &b) {
     float x = b.x - a.x;
@@ -31,7 +31,7 @@ float calc::norm(const cv::Point2f &point) {
     return std::sqrt(std::pow(point.x, 2.f) + std::pow(point.y, 2.f));
 }
 
-int toy_decoder::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
+int notqrcode::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
                               std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
     int val = 0;
     int bit = 0;
