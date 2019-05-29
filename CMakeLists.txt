@@ -4,13 +4,11 @@ project(ToyDecoder VERSION 0.1)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+option(TEST "Compiles Tests" OFF)
 option(AUTO_TEST "Enables Tests Post build" OFF)
 
 find_package(OpenCV 4.0 REQUIRED)
 find_package(fmt REQUIRED)
-find_package(Catch2 REQUIRED)
-
-enable_testing()
 
 set(SOURCES src/toy_decoder.cpp src/util.cpp)
 set(HEADERS include/toy_decoder/toy_decoder.hpp include/toy_decoder/util.hpp)
@@ -31,27 +29,32 @@ target_link_libraries(main PRIVATE
                       fmt::fmt
                       toy_decoder)
 
-add_executable(unit_test tests/test.cpp)
-add_test(NAME unit_test COMMAND unit_test)
-target_include_directories(unit_test PRIVATE include)
-target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
-target_link_libraries(unit_test PRIVATE
-                      ${OpenCV_LIBS}
-                      fmt::fmt
-                      Catch2::Catch2
-                      toy_decoder)
+message(STATUS "TEST is ${TEST}")
+if(TEST)
+    find_package(Catch2 REQUIRED)
+    enable_testing()
+
+    add_executable(unit_test tests/test.cpp)
+    add_test(NAME unit_test COMMAND unit_test)
+    target_include_directories(unit_test PRIVATE include)
+    target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_link_libraries(unit_test PRIVATE
+                          ${OpenCV_LIBS}
+                          fmt::fmt
+                          Catch2::Catch2
+                          toy_decoder)
+endif()
 
 # enable target test when AUTO_TEST=ON
 message(STATUS "AUTO_TEST is ${AUTO_TEST}")
-if (AUTO_TEST)
+if(AUTO_TEST)
     add_custom_command(
             TARGET unit_test
             COMMENT "Run tests"
             POST_BUILD
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            COMMAND ${CMAKE_CTEST_COMMAND} --verbose
-    )
-endif ()
+            COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
+endif()
 
 # generate docs
 add_custom_target(doc)
