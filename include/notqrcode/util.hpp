@@ -14,8 +14,8 @@ namespace notqrcode {
 
 namespace util {
 
-template <typename T, typename S>
-constexpr T to(const S&& val) {
+template<typename T, typename S>
+constexpr T to(const S &&val) {
     return static_cast<T>(val);
 }
 
@@ -29,6 +29,8 @@ constexpr static float PIf = static_cast<float>(M_PI);
  */
 int decode(std::vector<cv::KeyPoint>::const_iterator begin,
            std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
+
+std::vector<cv::KeyPoint>::iterator partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end, float height);
 
 namespace units {
 
@@ -69,8 +71,7 @@ private:
 };
 
 /// User defined literal, syntactic sugar
-constexpr Degrees operator "" _deg(long double deg)
-{
+constexpr Degrees operator "" _deg(long double deg) {
     return Degrees{static_cast<float>(deg)};
 }
 

@@ -44,6 +44,6 @@ int main(int argc, char **argv) {
     std::tie(decoded_point, worked) = decoder.decode();
     if (!worked)
         return 1;
-    fmt::print("Decoded: ({},{}), result: {}", decoded_point.x, decoded_point.y, worked);
+    fmt::print("Decoded: ({},{}), result: {}\n", decoded_point.x, decoded_point.y, worked);
     return 0;
 }
