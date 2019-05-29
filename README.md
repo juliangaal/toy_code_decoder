@@ -16,7 +16,7 @@ rotation invariant, experimental codes in this style:
 * [fmt](https://github.com/fmtlib/fmt)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)
 
-![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode.svg) for ubuntu 16.04, run the [installation script](./install.sh) to install all necessary components, if they aren't on your system
+![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode.svg) for ubuntu 16.04, clone this repo and run the [installation script](./install.sh) with `bash scripts/install.sh` to install all necessary components, if they aren't on your system
 
 #### Install
 ```bash
