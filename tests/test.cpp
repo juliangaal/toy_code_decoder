@@ -1,13 +1,13 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-#include <toy_decoder/toy_decoder.hpp>
-#include <toy_decoder/util.hpp>
+#include <notqrcode/notqrcode_decoder.hpp>
+#include <notqrcode/util.hpp>
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
 #include <sstream>
 #include <string>
 
-using namespace toy_decoder::util;
+using namespace notqrcode::util;
 
 TEST_CASE("Test rotation/rotation matrix", "[test_rotation]") {
     auto in = cv::Point2f(1, 0);
@@ -74,14 +74,14 @@ TEST_CASE("Test vector decoder", "[test_vector_decoder]") {
 }
 
 TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
-    using namespace toy_decoder;
+    using namespace notqrcode;
     float orientation;
     bool result;
 
     {
         std::string file = "rect_bw_45";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -95,7 +95,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     {
         std::string file = "rect_bw_90";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -109,7 +109,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     {
         std::string file = "rect_bw_neg45";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -123,7 +123,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     {
         std::string file = "rect_bw_neg135";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -136,7 +136,7 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 }
 
 TEST_CASE("Test decoder values", "[test_decoder_values]") {
-    using namespace toy_decoder;
+    using namespace notqrcode;
     float orientation;
     cv::Point2i decoded_point;
     bool result;
@@ -147,7 +147,7 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 0101: 5
         std::string file = "rect_bw_neg135";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -168,7 +168,7 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 0101: 5
         std::string file = "rect_bw_neg45";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -189,7 +189,7 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 0101: 5
         std::string file = "rect_bw_90";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -210,7 +210,7 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 0101: 5
         std::string file = "rect_bw_45";
         cv::Mat im = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_COLOR);
-        ToyDecoder decoder(im);
+        NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
         std::tie(orientation, result) = decoder.calculate_orientation(YES);
@@ -227,7 +227,7 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
 }
 
 TEST_CASE("Various", "[various]") {
-    using namespace toy_decoder::util::units;
+    using namespace notqrcode::util::units;
     units::Degrees x = 90.0_deg;
     REQUIRE(x.to_rad() == Approx(PIf/2.0).margin(0.0001));
     REQUIRE(x.to_deg() == Approx(90.0f).margin(0.0001));

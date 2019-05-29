@@ -2,15 +2,15 @@
 // Created by julian on 5/25/19.
 //
 
-#include <toy_decoder/toy_decoder.hpp>
+#include <notqrcode/notqrcode_decoder.hpp>
 #include <fmt/format.h>
 #include <exception>
 #include <numeric>
 #include <algorithm>
 
-using namespace toy_decoder;
+using namespace notqrcode;
 
-ToyDecoder::ToyDecoder(cv::Mat &img) : _img{img}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
+NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img) : _img{img}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
     if (img.empty())
         throw std::runtime_error("opencv image empty!");
 
@@ -36,7 +36,7 @@ ToyDecoder::ToyDecoder(cv::Mat &img) : _img{img}, _params{}, _keypoints{}, _orie
     _keypoints.reserve(10);
 }
 
-ToyDecoder::ToyDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : _img{img}, _params{params}, _keypoints{},
+NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : _img{img}, _params{params}, _keypoints{},
                                                                               _orientation_point{}, _avg_size{} {
     if (img.empty())
         throw std::runtime_error("opencv image empty!");
@@ -44,7 +44,7 @@ ToyDecoder::ToyDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : _i
     _keypoints.reserve(10);
 }
 
-void ToyDecoder::calculate_keypoints(Draw draw) {
+void NotQRCodeDecoder::calculate_keypoints(Draw draw) {
     // Set up detector with params and detect
     auto detector = cv::SimpleBlobDetector::create(_params);
     detector->detect(_img, _keypoints);
@@ -61,8 +61,8 @@ void ToyDecoder::calculate_keypoints(Draw draw) {
     }
 }
 
-std::tuple<float, bool> ToyDecoder::calculate_orientation(Draw draw) {
-    using namespace toy_decoder::util;
+std::tuple<float, bool> NotQRCodeDecoder::calculate_orientation(Draw draw) {
+    using namespace notqrcode::util;
 
     if (_keypoints.size() != 9) {
         fmt::print("Didn't get 9 keypoints: {}\n", _keypoints.size());
@@ -116,14 +116,14 @@ std::tuple<float, bool> ToyDecoder::calculate_orientation(Draw draw) {
     return std::make_tuple(orientation, true);
 }
 
-void ToyDecoder::rotate_img(toy_decoder::util::units::Degrees degrees) {
+void NotQRCodeDecoder::rotate_img(notqrcode::util::units::Degrees degrees) {
     auto shape = cv::Point2f{static_cast<float>(_img.cols / 2.), static_cast<float>(_img.rows / 2.)};
     auto img_rot_matrix = cv::getRotationMatrix2D(shape, degrees.to_deg(), 1);
     cv::warpAffine(_img, _img, img_rot_matrix, cv::Size{_img.cols, _img.rows});
 }
 
-void ToyDecoder::rotate_keypoints(toy_decoder::util::units::Degrees degrees) {
-    using namespace toy_decoder::util;
+void NotQRCodeDecoder::rotate_keypoints(notqrcode::util::units::Degrees degrees) {
+    using namespace notqrcode::util;
     // apply rotation to keypoints
     // use opportunity to calculate average blob size in keypoints, which are encoding bits at this stage
     for (auto &keypoint: _keypoints) {
@@ -138,7 +138,7 @@ void ToyDecoder::rotate_keypoints(toy_decoder::util::units::Degrees degrees) {
     calc::rotate(_orientation_point.pt, degrees);
 }
 
-std::tuple<cv::Point2i, bool> ToyDecoder::decode() {
+std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
     if (_keypoints.size() != 8) {
         fmt::print("Invalid number of keypoints detected: {}", _keypoints.size());
         return std::make_tuple(cv::Point2i{}, false);
@@ -165,11 +165,11 @@ std::tuple<cv::Point2i, bool> ToyDecoder::decode() {
     return std::make_tuple(p, true);
 }
 
-void ToyDecoder::save_img(std::string name) {
+void NotQRCodeDecoder::save_img(std::string name) {
     cv::imwrite(name, _img);
 }
 
-void ToyDecoder::open_img(std::string name) {
+void NotQRCodeDecoder::open_img(std::string name) {
     cv::imshow(name, _img);
     cv::waitKey(0);
 }

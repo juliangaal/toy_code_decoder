@@ -39,4 +39,4 @@ sudo make install
 
 cd $HOME && rm -rf $HOME/install_stuff
 cd $loc && mkdir -p build && cd build 
-cmake -DTEST=ON -DAUTO_TEST=ON -DCMAKE_BUILD_TYPE=Release .. && make -j3
+cmake -DCOMPILE_TEST=ON -DENABLE_AUTO_TEST=ON -DCMAKE_BUILD_TYPE=Release .. && make -j3

@@ -2,15 +2,15 @@
 // Created by julian on 5/24/19.
 //
 
-#ifndef HWCPP_UTIL_HPP
-#define HWCPP_UTIL_HPP
+#ifndef NOTQRCODE_UTIL_HPP
+#define NOTQRCODE_UTIL_HPP
 
 #include <cmath>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-namespace toy_decoder {
+namespace notqrcode {
 
 namespace util {
 
@@ -34,7 +34,7 @@ namespace units {
 
 /**
  * Helper class to avoid calculation errors between degrees and radians
- * Used for more explicit function parameters, e.g. toy_decoder::rotate_keypoints
+ * Used for more explicit function parameters, e.g. notqrcode::rotate_keypoints
  */
 class Degrees {
 public:
@@ -74,7 +74,7 @@ constexpr Degrees operator "" _deg(long double deg)
     return Degrees{static_cast<float>(deg)};
 }
 
-} // namespace toy_decoder::util::units
+} // namespace notqrcode::util::units
 
 namespace geo {
 
@@ -96,7 +96,7 @@ geo::UnitVector connecting_vector(const cv::Point2f &a, const cv::Point2f &b);
  */
 void to_cartesian(cv::Point2f &point);
 
-} // namespace toy_decoder::util::geo
+} // namespace notqrcode::util::geo
 
 namespace calc {
 
@@ -114,8 +114,8 @@ void rotate(cv::Point2f &point, units::Degrees degrees);
  */
 float norm(const cv::Point2f &point);
 
-} // namespace toy_decoder::util::calc
-} // namespace toy_decoder::util
-} // namespace toy_decoder
+} // namespace notqrcode::util::calc
+} // namespace notqrcode::util
+} // namespace notqrcode
 
-#endif //HWCPP_UTIL_HPP
+#endif //NOTQRCODE_UTIL_HPP

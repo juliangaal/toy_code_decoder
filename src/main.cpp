@@ -2,15 +2,14 @@
 // Created by julian on 5/26/19.
 //
 
+#include <notqrcode/notqrcode_decoder.hpp>
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
-#include <toy_decoder/util.hpp>
 #include <algorithm>
 #include <iterator>
-#include <toy_decoder/toy_decoder.hpp>
 #include <tuple>
 
-using namespace toy_decoder;
+using namespace notqrcode;
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -26,7 +25,7 @@ int main(int argc, char **argv) {
     // 0101: 5
     // 1010: 10
     cv::Mat im = cv::imread(file, cv::IMREAD_GRAYSCALE);
-    ToyDecoder decoder(im);
+    NotQRCodeDecoder decoder(im);
 
     float orientation;
     cv::Point2i decoded_point;
