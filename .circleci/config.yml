@@ -13,4 +13,4 @@ jobs:
             apt-get install -y software-properties-common
       - run: 
           name: Run Installation script
-          command: bash scripts/install.sh
+          command: bash scripts/circleci.sh
