@@ -40,7 +40,7 @@ Manual mode
 
 int main(void) {
     cv::Mat im = cv::imread("file.jpg", cv::IMREAD_GRAYSCALE);
-    NotQRCode decoder(im);
+    notqrcode::NotQRCode decoder(im);
     
     float orientation;
     cv::Point2i decoded_point;
@@ -58,6 +58,8 @@ int main(void) {
     
     fmt::print("Rotation: {}\n", orientation);
     fmt::print("Decoded: ({},{}), result: {}\n", decoded_point.x, decoded_point.y, worked);
+    
+    return 0;
 } 
 ```
 
