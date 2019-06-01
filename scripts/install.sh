@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+
 set -e # exit on first fail
 sudo add-apt-repository -y universe
 sudo apt-get update -y
-sudo apt-get install -y build-essential git cmake libboost-all-dev python3-pip
+sudo apt-get install -y build-essential git cmake python3-pip
 
 loc=$PWD
 mkdir -p $HOME/install_stuff
@@ -43,5 +44,5 @@ pip3 install -r requirements.txt
 
 # run decoder tests
 cd $HOME && rm -rf $HOME/install_stuff
-cd $loc && mkdir -p build && cd build 
-cmake -DAUTO_TEST=ON -DCMAKE_BUILD_TYPE=Release .. && make -j3
+cd $loc && mkdir -p build && cd build
+cmake -DCOMPILE_TEST=ON -DENABLE_AUTO_TEST=ON -DCMAKE_BUILD_TYPE=Release .. && make -j3

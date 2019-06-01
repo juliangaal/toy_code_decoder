@@ -2,52 +2,15 @@
 // Created by julian on 5/24/19.
 //
 
-#include <toy_decoder/util.hpp>
+#include <notqrcode/util.hpp>
 #include <iostream>
 
-using namespace toy_decoder::util;
-
-bool color::same_color(const cv::Mat &im, const cv::KeyPoint &point, Color color, float tolerance) {
-    // opencv idiots thought it was a good idea to return color in BGR
-    auto true_color = im.at<cv::Vec3b>(point.pt);
-    switch (color) {
-        case RED:
-            if (std::abs(RGBRED[0] - true_color.val[2]) < tolerance &&
-                std::abs(RGBRED[1] - true_color.val[1]) < tolerance &&
-                std::abs(RGBRED[2] - true_color.val[0]) < tolerance)
-                return true;
-            break;
-        case GREEN:
-            if (std::abs(RGBGREEN[1] - true_color.val[1]) < tolerance) return true;
-            break;
-        case BLUE:
-            if (std::abs(RGBBLUE[2] - true_color.val[0]) < tolerance) return true;
-            break;
-        case BLACK:
-            if (std::abs(RGBBLACK[0] - true_color.val[2]) < tolerance &&
-                std::abs(RGBBLACK[1] - true_color.val[1]) < tolerance &&
-                std::abs(RGBBLACK[2] - true_color.val[0]) < tolerance)
-                return true;
-            break;
-        default:
-            break;
-    }
-
-    return false;
-}
-
-bool color::is_black(const cv::Mat &im, const cv::KeyPoint &point, float tolerance) {
-    return same_color(im, point, Color::BLACK, tolerance);
-}
-
-bool color::is_red(const cv::Mat &im, const cv::KeyPoint &point, float tolerance) {
-    return same_color(im, point, Color::RED, tolerance);
-}
+using namespace notqrcode::util;
 
 geo::UnitVector geo::connecting_vector(const cv::Point2f &a, const cv::Point2f &b) {
     float x = b.x - a.x;
     float y = b.y - a.y;
-    float length = std::sqrt(std::pow(x, 2) + std::pow(y, 2));
+    float length = std::sqrt(std::pow(x, 2.f) + std::pow(y, 2.f));
     return geo::UnitVector{x / length, y / length};
 }
 
@@ -65,18 +28,29 @@ void calc::rotate(cv::Point2f &point, units::Degrees degrees) {
 }
 
 float calc::norm(const cv::Point2f &point) {
-    return std::sqrt(std::pow(point.x, 2) + std::pow(point.y, 2));
+    return std::sqrt(std::pow(point.x, 2.f) + std::pow(point.y, 2.f));
 }
 
-int toy_decoder::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
-                              std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
+int notqrcode::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
+                            std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
     int val = 0;
     int bit = 0;
 
     for (auto it = begin; it != end; it++) {
-        int exp = std::distance(it, end) - 1;
+        int exp = std::distance(it, end) - 1u;
         bit = ((*it).size < avg_size) ? 0 : 1;
         val += bit * std::pow(2, exp);
     }
+
     return val;
+}
+
+std::vector<cv::KeyPoint>::iterator
+notqrcode::util::partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end,
+                                     float heigth) {
+    const auto separator_it = std::stable_partition(begin, end, [&](const auto &p) {
+        return p.pt.y > heigth;
+    });
+
+    return separator_it;
 }
