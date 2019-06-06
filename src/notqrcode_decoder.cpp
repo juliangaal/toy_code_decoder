@@ -3,7 +3,6 @@
 //
 
 #include <notqrcode/notqrcode_decoder.hpp>
-#include <fmt/format.h>
 #include <exception>
 #include <numeric>
 #include <algorithm>
@@ -61,12 +60,11 @@ void NotQRCodeDecoder::calculate_keypoints(Draw draw) {
     }
 }
 
-std::tuple<float, bool> NotQRCodeDecoder::calculate_orientation(Draw draw) {
+Result<float> NotQRCodeDecoder::calculate_orientation(Draw draw) {
     using namespace notqrcode::util;
 
     if (_keypoints.size() != 17) {
-        fmt::print("Didn't get 17 keypoints: {}\n", _keypoints.size());
-        return std::make_tuple(0.0f, false);
+        return Result<float>{0.0, Error::InvalidKeyPoints};
     }
 
     // partition in bit points and orientation points
@@ -113,7 +111,7 @@ std::tuple<float, bool> NotQRCodeDecoder::calculate_orientation(Draw draw) {
             break;
     }
 
-    return std::make_tuple(orientation, true);
+    return Result<float>{orientation, Error::None};
 }
 
 void NotQRCodeDecoder::rotate_img(notqrcode::util::units::Degrees degrees) {
@@ -138,10 +136,9 @@ void NotQRCodeDecoder::rotate_keypoints(notqrcode::util::units::Degrees degrees)
     calc::rotate(_orientation_point.pt, degrees);
 }
 
-std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
+Result<cv::Point2i> NotQRCodeDecoder::decode() {
     if (_keypoints.size() != 16) {
-        fmt::print("Invalid number of keypoints detected: {}", _keypoints.size());
-        return std::make_tuple(cv::Point2i{}, false);
+        return Result<cv::Point2i>{cv::Point2i{}, Error::InvalidKeyPoints};
     }
 
     // line is rotated => any points below/above points below to either bits
@@ -150,8 +147,7 @@ std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
     const auto h_separator_it = util::partition_by_height(_keypoints.begin(), _keypoints.end(), _orientation_point.pt.y);
     // if separator fails for any reason, return
     if (h_separator_it == _keypoints.end()) {
-        fmt::print("Can't separate keypoints\n");
-        return std::make_tuple(cv::Point2i{}, false);
+        return Result<cv::Point2i>{cv::Point2i{}, Error::SeparationError};
     }
 
     // centroid of each x bits and y bits, needed for next separation height
@@ -180,16 +176,14 @@ std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
     const auto x_separator_it = util::partition_by_height(_keypoints.begin(), h_separator_it, x_centroid.y);
     // if separator fails for any reason, return
     if (x_separator_it == _keypoints.end()) {
-        fmt::print("Can't separate keypoints x\n");
-        return std::make_tuple(cv::Point2i{}, false);
+        return Result<cv::Point2i>{cv::Point2i{}, Error::SeparationError};
     }
 
     // this separator separates the 2 levels of bits below horizontal line, so the y bits
     const auto y_separator_it = util::partition_by_height(h_separator_it, _keypoints.end(), y_centroid.y);
     // if separator fails for any reason, return
     if (y_separator_it == _keypoints.end()) {
-        fmt::print("Can't separate keypoints y\n");
-        return std::make_tuple(cv::Point2i{}, false);
+        return Result<cv::Point2i>{cv::Point2i{}, Error::SeparationError};
     }
 
     // lambda helper function
@@ -203,10 +197,10 @@ std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
     std::sort(h_separator_it, y_separator_it, point_further_left);
     std::sort(y_separator_it, _keypoints.end(), point_further_left);
 
-    cv::Point2i p{util::decode(_keypoints.cbegin(), h_separator_it, _avg_size),
+    cv::Point2i decoded_point{util::decode(_keypoints.cbegin(), h_separator_it, _avg_size),
                   util::decode(h_separator_it, _keypoints.cend(), _avg_size)};
 
-    return std::make_tuple(p, true);
+    return Result<cv::Point2i>{decoded_point, Error::None};
 }
 
 void NotQRCodeDecoder::save_img(std::string name) {

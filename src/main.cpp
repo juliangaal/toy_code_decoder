@@ -25,28 +25,20 @@ int main(int argc, char **argv) {
     // 0101: 5
     // 1010: 10
     cv::Mat im = cv::imread(file, cv::IMREAD_GRAYSCALE);
-
     NotQRCodeDecoder decoder(im);
-
-    float orientation;
-    cv::Point2i decoded_point;
-    bool worked;
-
+    
     decoder.calculate_keypoints(Draw::YES);
-    std::tie(orientation, worked) = decoder.calculate_orientation(Draw::YES);
-    if (!worked)
+    auto orientation = decoder.calculate_orientation(Draw::YES);
+    if (orientation.error != Error::None)
         return 1;
-    decoder.open_img("before");
-    decoder.rotate_img(util::units::Degrees(orientation));
-    decoder.save_img("main.jpg");
-    decoder.open_img("after");
-    decoder.rotate_keypoints(util::units::Degrees(orientation));
-    fmt::print("Rotation: {}\n", orientation);
-    std::tie(decoded_point, worked) = decoder.decode();
-    if (!worked)
+    
+    decoder.rotate_keypoints(util::units::Degrees(orientation.val));
+    auto decoded_point = decoder.decode();
+    if (decoded_point.error != Error::None)
         return 1;
 
-    fmt::print("Decoded: ({},{}), result: {}\n", decoded_point.x, decoded_point.y, worked);
+    fmt::print("Rotation: {}\n", orientation.val);
+    fmt::print("Decoded: ({},{})\n", decoded_point.val.x, decoded_point.val.y);
 
     return 0;
 }

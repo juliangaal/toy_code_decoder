@@ -13,7 +13,7 @@ rotation invariant, experimental codes in this style:
 
 #### Dependencies
 * OpenCV 4.0
-* [fmt](https://github.com/fmtlib/fmt)
+* [fmt](https://github.com/fmtlib/fmt) (for tests)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)
 
 ![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode.svg) for ubuntu 16.04, clone this repo and run the [installation script](./install.sh) with `bash scripts/install.sh` to install all necessary components, if they aren't on your system
@@ -37,28 +37,23 @@ Manual mode
 #include <notqrcode/notqrcode_decoder.hpp>
 
 int main(void) {
-    cv::Mat im = cv::imread("file.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat im = cv::imread(file, cv::IMREAD_GRAYSCALE);
     notqrcode::NotQRCodeDecoder decoder(im);
-    
-    float orientation;
-    cv::Point2i decoded_point;
-    bool worked;
-    
-    decoder.calculate_keypoints();
-    std::tie(orientation, worked) = decoder.calculate_orientation();
-    if (!worked)
+
+    decoder.calculate_keypoints(Draw::YES);
+    auto orientation = decoder.calculate_orientation(Draw::YES);
+    if (orientation.error != Error::None)
         return 1;
 
-    decoder.rotate_keypoints(util::units::Degrees(orientation));
-    std::tie(decoded_point, worked) = decoder.decode();
-    if (!worked)
+    decoder.rotate_keypoints(util::units::Degrees(orientation.val));
+    auto decoded_point = decoder.decode();
+    if (decoded_point.error != Error::None)
         return 1;
-    
-    fmt::print("Rotation: {}\n", orientation);
-    fmt::print("Decoded: ({},{}), result: {}\n", decoded_point.x, decoded_point.y, worked);
+
+    fmt::print("Rotation: {}\n", orientation.val);
+    fmt::print("Decoded: ({},{})\n", decoded_point.val.x, decoded_point.val.y);
 
     return 0;
-} 
 ```
 
 #### Use with cmake
