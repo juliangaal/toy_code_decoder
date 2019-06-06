@@ -21,14 +21,6 @@ target_link_libraries(notqrcode PUBLIC
                       ${OpenCV_LIBS}
                       fmt::fmt)
 
-add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE include)
-target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-target_link_libraries(main PRIVATE
-                      ${OpenCV_LIBS}
-                      fmt::fmt
-                      notqrcode)
-
 # enable tests compilation when COMPILE_TEST=ON
 message(STATUS "COMPILE_TEST set to ${COMPILE_TEST}")
 if(COMPILE_TEST)
@@ -43,6 +35,14 @@ if(COMPILE_TEST)
                           ${OpenCV_LIBS}
                           fmt::fmt
                           Catch2::Catch2
+                          notqrcode)
+
+    add_executable(main src/main.cpp)
+    target_include_directories(main PRIVATE include)
+    target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(main PRIVATE
+                          ${OpenCV_LIBS}
+                          fmt::fmt
                           notqrcode)
 endif()
 
