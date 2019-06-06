@@ -2,9 +2,7 @@
 rotation invariant, experimental codes in this style:
 
 <p float="left">
-    <img src="./tests/pics/rect_bw_180_show_off.jpg" width="500" />
-    <img src="./tests/pics/rect_bw_neg90_show_off.jpg" width="500" />
-    <img src="./tests/pics/rect_bw_16_show_off.jpg" width="500" />
+  <img src="./tests/pics/rect_bw_16_show_off.jpg" width="400" />
 </p>
 
 #### Properties

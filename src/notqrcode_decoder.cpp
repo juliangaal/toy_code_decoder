@@ -154,7 +154,7 @@ std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
         return std::make_tuple(cv::Point2i{}, false);
     }
 
-    // centroid of each x bits and y bits
+    // centroid of each x bits and y bits, needed for next separation height
     cv::Point2f x_centroid{};
     cv::Point2f y_centroid{};
 
@@ -202,7 +202,6 @@ std::tuple<cv::Point2i, bool> NotQRCodeDecoder::decode() {
     // Sort keypoints for y bits from left to right, left being the smallest after sorting
     std::sort(h_separator_it, y_separator_it, point_further_left);
     std::sort(y_separator_it, _keypoints.end(), point_further_left);
-
 
     cv::Point2i p{util::decode(_keypoints.cbegin(), h_separator_it, _avg_size),
                   util::decode(h_separator_it, _keypoints.cend(), _avg_size)};
