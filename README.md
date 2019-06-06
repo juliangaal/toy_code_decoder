@@ -56,7 +56,7 @@ int main(void) {
     
     fmt::print("Rotation: {}\n", orientation);
     fmt::print("Decoded: ({},{}), result: {}\n", decoded_point.x, decoded_point.y, worked);
-
+    
     return 0;
 } 
 ```
