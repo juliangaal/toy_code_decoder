@@ -20,6 +20,28 @@ enum Draw {
 };
 
 /**
+ * Error types for NotQRCodeDecoder
+ */
+enum Error {
+    None,
+    InvalidKeyPoints,
+    SeparationError,
+};
+
+/**
+ * Result type
+ * @tparam T type of result value
+ */
+template <typename T>
+struct Result {
+    // Value of calculation
+    T val;
+    
+    // Error of calculation
+    Error error;
+};
+
+/**
  * Handles all operations necessary to decode Code (sample seen in README.md)
  */
 class NotQRCodeDecoder {
@@ -48,9 +70,9 @@ public:
 
     /**
      * Calculates orientation from keypoint
-     * @return orientation, success (true if successful)
+     * @return Result with orientation, error type
      */
-    std::tuple<float, bool> calculate_orientation(Draw mark = NO);
+    Result<float> calculate_orientation(Draw mark = NO);
 
     /**
      * Rotate keypoints by specified amout
@@ -66,9 +88,9 @@ public:
 
     /**
      * Decodes code
-     * @return cv::Point2i with coordinates and success or not
+     * @return Result with cv::Point2i with coordinates and error type
      */
-    std::tuple<cv::Point2i, bool> decode();
+    Result<cv::Point2i> decode();
 
     /**
      * Saves image

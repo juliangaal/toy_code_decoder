@@ -8,7 +8,6 @@ option(COMPILE_TEST "Compiles Tests" OFF)
 option(ENABLE_AUTO_TEST "Enables Tests Post build" OFF)
 
 find_package(OpenCV 4.0 REQUIRED)
-find_package(fmt REQUIRED)
 
 set(SOURCES src/notqrcode_decoder.cpp src/util.cpp)
 set(HEADERS include/notqrcode/notqrcode_decoder.hpp include/notqrcode/util.hpp)
@@ -18,21 +17,13 @@ target_include_directories(notqrcode PUBLIC
                            $<INSTALL_INTERFACE:include>)
 target_compile_options(notqrcode PRIVATE -Wall -Wextra -Weffc++ -pedantic -ffast-math -Werror)
 target_link_libraries(notqrcode PUBLIC
-                      ${OpenCV_LIBS}
-                      fmt::fmt)
-
-add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE include)
-target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-target_link_libraries(main PRIVATE
-                      ${OpenCV_LIBS}
-                      fmt::fmt
-                      notqrcode)
+                      ${OpenCV_LIBS})
 
 # enable tests compilation when COMPILE_TEST=ON
 message(STATUS "COMPILE_TEST set to ${COMPILE_TEST}")
 if(COMPILE_TEST)
     find_package(Catch2 REQUIRED)
+    find_package(fmt REQUIRED)
     enable_testing()
 
     add_executable(unit_test tests/test.cpp)
@@ -41,8 +32,15 @@ if(COMPILE_TEST)
     target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
     target_link_libraries(unit_test PRIVATE
                           ${OpenCV_LIBS}
-                          fmt::fmt
                           Catch2::Catch2
+                          notqrcode)
+
+    add_executable(main src/main.cpp)
+    target_include_directories(main PRIVATE include)
+    target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(main PRIVATE
+                          ${OpenCV_LIBS}
+                          fmt::fmt
                           notqrcode)
 endif()
 

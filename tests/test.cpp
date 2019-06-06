@@ -3,7 +3,6 @@
 #include <notqrcode/notqrcode_decoder.hpp>
 #include <notqrcode/util.hpp>
 #include <opencv2/opencv.hpp>
-#include <fmt/format.h>
 #include <sstream>
 #include <string>
 
@@ -75,8 +74,6 @@ TEST_CASE("Test vector decoder", "[test_vector_decoder]") {
 
 TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
     using namespace notqrcode;
-    float orientation;
-    bool result;
 
     {
         std::string file = "rect_bw_16_45_xlarge";
@@ -84,11 +81,11 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~45, in this case 43.94
-        REQUIRE(orientation == Approx(45).epsilon(0.03));
+        REQUIRE(orientation.val == Approx(45).epsilon(0.03));
 
-        decoder.rotate_img(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
         decoder.save_img(file + "_rotated.jpg");
     }
 
@@ -98,11 +95,11 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~90, in this case 89.25
-        REQUIRE(orientation == Approx(90.0f).epsilon(0.01));
+        REQUIRE(orientation.val == Approx(90.0f).epsilon(0.01));
 
-        decoder.rotate_img(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
         decoder.save_img(file + "_rotated.jpg");
     }
 
@@ -112,11 +109,11 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~-45, in this case -44.47
-        REQUIRE(orientation == Approx(-45).epsilon(0.015));
+        REQUIRE(orientation.val == Approx(-45).epsilon(0.015));
 
-        decoder.rotate_img(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
         decoder.save_img(file + "_rotated.jpg");
     }
 
@@ -126,20 +123,17 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~-135, in this case -135.5
-        REQUIRE(orientation == Approx(-135.f).epsilon(0.005));
+        REQUIRE(orientation.val == Approx(-135.f).epsilon(0.005));
 
-        decoder.rotate_img(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
         decoder.save_img(file + "_rotated.jpg");
     }
 }
 
 TEST_CASE("Test decoder values", "[test_decoder_values]") {
     using namespace notqrcode;
-    float orientation;
-    cv::Point2i decoded_point;
-    bool result;
 
     {
         // this image encodes -135 degrees orientation and
@@ -150,16 +144,16 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~-135, in this case -135.5
-        REQUIRE(orientation == Approx(-135.f).epsilon(0.005));
+        REQUIRE(orientation.val == Approx(-135.f).epsilon(0.005));
 
-        decoder.rotate_img(units::Degrees(orientation));
-        decoder.rotate_keypoints(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
+        decoder.rotate_keypoints(units::Degrees(orientation.val));
 
-        std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 165);
-        REQUIRE(decoded_point.y == 165);
+        auto decoded_point = decoder.decode();
+        REQUIRE(decoded_point.val.x == 165);
+        REQUIRE(decoded_point.val.y == 165);
     }
 
     {
@@ -171,16 +165,16 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~-45, in this case -44.47
-        REQUIRE(orientation == Approx(-45.0f).epsilon(0.015));
+        REQUIRE(orientation.val == Approx(-45.0f).epsilon(0.015));
 
-        decoder.rotate_img(units::Degrees(orientation));
-        decoder.rotate_keypoints(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
+        decoder.rotate_keypoints(units::Degrees(orientation.val));
 
-        std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 165);
-        REQUIRE(decoded_point.y == 165);
+        auto decoded_point = decoder.decode();
+        REQUIRE(decoded_point.val.x == 165);
+        REQUIRE(decoded_point.val.y == 165);
     }
 
     {
@@ -192,16 +186,16 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~90, in this case 89.25
-        REQUIRE(orientation == Approx(90.f).epsilon(0.01));
+        REQUIRE(orientation.val == Approx(90.f).epsilon(0.01));
 
-        decoder.rotate_img(units::Degrees(orientation));
-        decoder.rotate_keypoints(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
+        decoder.rotate_keypoints(units::Degrees(orientation.val));
 
-        std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 165);
-        REQUIRE(decoded_point.y == 165);
+        auto decoded_point = decoder.decode();
+        REQUIRE(decoded_point.val.x == 165);
+        REQUIRE(decoded_point.val.y == 165);
     }
 
     {
@@ -213,16 +207,16 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         NotQRCodeDecoder decoder(im);
 
         decoder.calculate_keypoints(Draw::YES);
-        std::tie(orientation, result) = decoder.calculate_orientation(YES);
+        auto orientation = decoder.calculate_orientation(YES);
         // should detect ~45, in this case 43.94
-        REQUIRE(orientation == Approx(45.f).epsilon(0.03));
+        REQUIRE(orientation.val == Approx(45.f).epsilon(0.03));
 
-        decoder.rotate_img(units::Degrees(orientation));
-        decoder.rotate_keypoints(units::Degrees(orientation));
+        decoder.rotate_img(units::Degrees(orientation.val));
+        decoder.rotate_keypoints(units::Degrees(orientation.val));
 
-        std::tie(decoded_point, result) = decoder.decode();
-        REQUIRE(decoded_point.x == 165);
-        REQUIRE(decoded_point.y == 165);
+        auto decoded_point = decoder.decode();
+        REQUIRE(decoded_point.val.x == 165);
+        REQUIRE(decoded_point.val.y == 165);
     }
 }
 
