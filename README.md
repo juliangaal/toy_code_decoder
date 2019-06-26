@@ -37,8 +37,7 @@ Manual mode
 #include <notqrcode/notqrcode_decoder.hpp>
 
 int main(void) {
-    cv::Mat im = cv::imread(file, cv::IMREAD_GRAYSCALE);
-    notqrcode::NotQRCodeDecoder decoder(im);
+    notqrcode::NotQRCodeDecoder decoder(filename);
 
     decoder.calculate_keypoints(Draw::YES);
     auto orientation = decoder.calculate_orientation(Draw::YES);

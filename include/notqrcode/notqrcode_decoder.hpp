@@ -15,7 +15,7 @@ namespace notqrcode {
  * Draw keypoints/orientation in image with Draw::YES
  */
 enum Draw {
-    YES,
+    YES = 0,
     NO,
 };
 
@@ -23,7 +23,7 @@ enum Draw {
  * Error types for NotQRCodeDecoder
  */
 enum Error {
-    None,
+    None = 0,
     InvalidKeyPoints,
     SeparationError,
 };
@@ -36,7 +36,7 @@ template <typename T>
 struct Result {
     // Value of calculation
     T val;
-    
+
     // Error of calculation
     Error error;
 };
@@ -49,12 +49,17 @@ public:
     /*
      * Init with OpenCV image
      */
-    NotQRCodeDecoder(cv::Mat &img);
+//    explicit NotQRCodeDecoder(cv::Mat &img);
+
+    /*
+     * Init with filename
+     */
+    explicit NotQRCodeDecoder(std::string filename);
 
     /*
      * Init with OpenCV Image and custom Simpleblobdetector params
      */
-    NotQRCodeDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params);
+//    NotQRCodeDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -105,7 +110,7 @@ public:
     void open_img(std::string name = "img");
 private:
     /// opencv image
-    cv::Mat &_img;
+    cv::Mat _img;
     /// simple blobdetector
     cv::SimpleBlobDetector::Params _params;
     /// vector to save keypoints
