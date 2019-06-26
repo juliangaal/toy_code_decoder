@@ -11,6 +11,7 @@ find_package(OpenCV 4.0 REQUIRED)
 
 set(LIB notqrcode)
 set(PY_LIB notqrcode_py)
+set(PY_GEN_PATH ${PROJECT_SOURCE_DIR}/scripts CACHE STRING "Where generated library will be placed")
 
 # notqrcode library
 set(SOURCES src/notqrcode_decoder.cpp src/util.cpp)
@@ -29,7 +30,7 @@ pybind11_add_module(${PY_LIB} src/bindings.cpp)
 target_link_libraries(${PY_LIB} PRIVATE ${LIB})
 set_target_properties(${PY_LIB}
                       PROPERTIES
-                      LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/)
+                      LIBRARY_OUTPUT_DIRECTORY ${PY_GEN_PATH})
 
 # enable tests compilation when COMPILE_TEST=ON
 message(STATUS "COMPILE_TEST set to ${COMPILE_TEST}")
