@@ -56,19 +56,14 @@ using Point2i = Point<int>;
 class NotQRCodeDecoder {
 public:
     /*
-     * Init with OpenCV image
-     */
-//    explicit NotQRCodeDecoder(cv::Mat &img);
-
-    /*
      * Init with filename
      */
     explicit NotQRCodeDecoder(std::string filename);
 
     /*
-     * Init with OpenCV Image and custom Simpleblobdetector params
-     */
-//    NotQRCodeDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params);
+     * Init with filename and custom Simpleblobdetector params
+    */
+    NotQRCodeDecoder(std::string filename, cv::SimpleBlobDetector::Params params);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;

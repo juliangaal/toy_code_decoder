@@ -26,11 +26,13 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make && sudo make install
 ```
 
+#### Install Python bindings
+
 #### Test
 * setting `-DCOMPILE_TEST=ON` will compile tests and expose target `test` in the cmake Makefile. You can then either run `make test` in the build directory, or `ctest --verbose` for verbose output in case of test failures.
 * setting `-DENABLE_AUTO_TEST=ON` will run unit test on every build, if enabled with above command
 
-### Use
+### Use with C++
 Manual mode
 ```cpp
 #include <fmt/format.h>
@@ -54,6 +56,29 @@ int main(void) {
 
     return 0;
 }
+```
+### Use with Python
+Manual mode
+```python3
+#!/usr/bin/env python3
+import notqrcode_py as qr
+import sys
+
+code = qr.NotQRCodeDecoder("../tests/pics/rect_bw_16_neg90_xlarge.jpg")
+
+code.calculateKeypoints()
+orientation = code.calculateOrientation()
+if orientation.error != 0:
+    print("Can't calculate orientation: {}".format(orientation.error))
+    sys.exit(1)
+
+code.rotateKeypoints(qr.Degrees(orientation.value))
+result = code.decode()
+if result.error != 0:
+    print("Can't decode: {}".format(result.error))
+    sys.exit(1)
+
+print("Decoded with orientation {:4.2f} deg and code {}".format(orientation.value, result.value))
 ```
 
 #### Use with cmake
