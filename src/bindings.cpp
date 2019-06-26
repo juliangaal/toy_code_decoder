@@ -30,11 +30,13 @@ PYBIND11_MODULE(notqrcode_py, m) {
     py::enum_<qr::Error>(m, "Error", py::arithmetic())
             .value("SeparationError", qr::Error::SeparationError)
             .value("InvalidKeypoints", qr::Error::InvalidKeyPoints)
-            .value("None", qr::Error::None);
+            .value("None", qr::Error::None)
+            .export_values();
 
     py::enum_<qr::Draw>(m, "Draw", py::arithmetic())
             .value("YES", qr::Draw::YES)
-            .value("NO", qr::Draw::NO);
+            .value("NO", qr::Draw::NO)
+            .export_values();
 
     py::class_<qr::Result<float>>(m, "FloatResult")
         .def_readonly("value", &qr::Result<float>::val)
