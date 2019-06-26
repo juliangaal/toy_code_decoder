@@ -20,7 +20,7 @@ rotation invariant, experimental codes in this style:
 
 #### Install
 ```bash
-git clone https://github.com/juliangaal/notqrcode/
+git clone --recursive https://github.com/juliangaal/notqrcode/
 cd notqrcode && mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make && sudo make install
@@ -54,6 +54,7 @@ int main(void) {
     fmt::print("Decoded: ({},{})\n", decoded_point.val.x, decoded_point.val.y);
 
     return 0;
+}
 ```
 
 #### Use with cmake
