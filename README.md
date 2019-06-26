@@ -11,8 +11,10 @@ Experimental decoder for codes in this style:
   * binary representation: big rects represent 1s, small rects represent 0s
   * Once properly rotated (thick bar in the east), rects above middle line represent x coordinate, below y coordinate
 * e.g. the picture above will decode to orientation: 0, coordinate: (165, 165)
+
 #### Dependencies
 * OpenCV 4.0
+* `pyhton3-dev` (for python bindings)
 * [fmt](https://github.com/fmtlib/fmt) (for tests)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)
 
