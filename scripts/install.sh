@@ -3,7 +3,7 @@
 set -e # exit on first fail
 sudo add-apt-repository -y universe
 sudo apt-get update -y
-sudo apt-get install -y build-essential git cmake
+sudo apt-get install -y build-essential git cmake python3-dev
 
 loc=$PWD
 mkdir -p $HOME/install_stuff
