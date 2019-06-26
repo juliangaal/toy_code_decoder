@@ -15,7 +15,7 @@ namespace notqrcode {
  * Draw keypoints/orientation in image with Draw::YES
  */
 enum Draw {
-    YES,
+    YES = 0,
     NO,
 };
 
@@ -23,7 +23,7 @@ enum Draw {
  * Error types for NotQRCodeDecoder
  */
 enum Error {
-    None,
+    None = 0,
     InvalidKeyPoints,
     SeparationError,
 };
@@ -36,10 +36,19 @@ template <typename T>
 struct Result {
     // Value of calculation
     T val;
-    
+
     // Error of calculation
     Error error;
 };
+
+/// Point typee used for pybind convenience
+template <typename T>
+struct Point {
+    T x;
+    T y;
+};
+
+using Point2i = Point<int>;
 
 /**
  * Handles all operations necessary to decode Code (sample seen in README.md)
@@ -47,14 +56,14 @@ struct Result {
 class NotQRCodeDecoder {
 public:
     /*
-     * Init with OpenCV image
+     * Init with filename
      */
-    NotQRCodeDecoder(cv::Mat &img);
+    explicit NotQRCodeDecoder(std::string filename);
 
     /*
-     * Init with OpenCV Image and custom Simpleblobdetector params
-     */
-    NotQRCodeDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params);
+     * Init with filename and custom Simpleblobdetector params
+    */
+    NotQRCodeDecoder(std::string filename, cv::SimpleBlobDetector::Params params);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -90,7 +99,7 @@ public:
      * Decodes code
      * @return Result with cv::Point2i with coordinates and error type
      */
-    Result<cv::Point2i> decode();
+    Result<Point2i> decode();
 
     /**
      * Saves image
@@ -105,7 +114,7 @@ public:
     void open_img(std::string name = "img");
 private:
     /// opencv image
-    cv::Mat &_img;
+    cv::Mat _img;
     /// simple blobdetector
     cv::SimpleBlobDetector::Params _params;
     /// vector to save keypoints

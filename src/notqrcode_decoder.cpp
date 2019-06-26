@@ -9,8 +9,9 @@
 
 using namespace notqrcode;
 
-NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img) : _img{img}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
-    if (img.empty())
+NotQRCodeDecoder::NotQRCodeDecoder(std::string filename) : _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _params{},
+                                                           _keypoints{}, _orientation_point{}, _avg_size{} {
+    if (_img.empty())
         throw std::runtime_error("opencv image empty!");
 
     // set simple blob detector params
@@ -35,9 +36,10 @@ NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img) : _img{img}, _params{}, _keypoi
     _keypoints.reserve(10);
 }
 
-NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img, cv::SimpleBlobDetector::Params params) : _img{img}, _params{params}, _keypoints{},
-                                                                              _orientation_point{}, _avg_size{} {
-    if (img.empty())
+NotQRCodeDecoder::NotQRCodeDecoder(std::string filename, cv::SimpleBlobDetector::Params params) :
+        _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _params{params}, _keypoints{},
+        _orientation_point{}, _avg_size{} {
+    if (_img.empty())
         throw std::runtime_error("opencv image empty!");
 
     _keypoints.reserve(10);
@@ -136,25 +138,26 @@ void NotQRCodeDecoder::rotate_keypoints(notqrcode::util::units::Degrees degrees)
     calc::rotate(_orientation_point.pt, degrees);
 }
 
-Result<cv::Point2i> NotQRCodeDecoder::decode() {
+Result<Point2i> NotQRCodeDecoder::decode() {
     if (_keypoints.size() != 16) {
-        return Result<cv::Point2i>{cv::Point2i{}, Error::InvalidKeyPoints};
+        return Result<Point2i>{Point2i{}, Error::InvalidKeyPoints};
     }
 
     // line is rotated => any points below/above points below to either bits
     // we are decoding 16 bits, 8 per "points over orientation line"
     // this separator is the first right down the horizontal line
-    const auto h_separator_it = util::partition_by_height(_keypoints.begin(), _keypoints.end(), _orientation_point.pt.y);
+    const auto h_separator_it = util::partition_by_height(_keypoints.begin(), _keypoints.end(),
+                                                          _orientation_point.pt.y);
     // if separator fails for any reason, return
     if (h_separator_it == _keypoints.end()) {
-        return Result<cv::Point2i>{cv::Point2i{}, Error::SeparationError};
+        return Result<Point2i>{Point2i{}, Error::SeparationError};
     }
 
     // centroid of each x bits and y bits, needed for next separation height
     cv::Point2f x_centroid{};
     cv::Point2f y_centroid{};
 
-    std::for_each(_keypoints.begin(), h_separator_it, [&](const auto& p){
+    std::for_each(_keypoints.begin(), h_separator_it, [&](const auto &p) {
         x_centroid.x += p.pt.x;
         x_centroid.y += p.pt.y;
     });
@@ -163,7 +166,7 @@ Result<cv::Point2i> NotQRCodeDecoder::decode() {
     x_centroid.x /= x_bits_num;
     x_centroid.y /= x_bits_num;
 
-    std::for_each(h_separator_it, _keypoints.end(), [&](const auto& p){
+    std::for_each(h_separator_it, _keypoints.end(), [&](const auto &p) {
         y_centroid.x += p.pt.x;
         y_centroid.y += p.pt.y;
     });
@@ -176,14 +179,14 @@ Result<cv::Point2i> NotQRCodeDecoder::decode() {
     const auto x_separator_it = util::partition_by_height(_keypoints.begin(), h_separator_it, x_centroid.y);
     // if separator fails for any reason, return
     if (x_separator_it == _keypoints.end()) {
-        return Result<cv::Point2i>{cv::Point2i{}, Error::SeparationError};
+        return Result<Point2i>{Point2i{}, Error::SeparationError};
     }
 
     // this separator separates the 2 levels of bits below horizontal line, so the y bits
     const auto y_separator_it = util::partition_by_height(h_separator_it, _keypoints.end(), y_centroid.y);
     // if separator fails for any reason, return
     if (y_separator_it == _keypoints.end()) {
-        return Result<cv::Point2i>{cv::Point2i{}, Error::SeparationError};
+        return Result<Point2i>{Point2i{}, Error::SeparationError};
     }
 
     // lambda helper function
@@ -197,10 +200,10 @@ Result<cv::Point2i> NotQRCodeDecoder::decode() {
     std::sort(h_separator_it, y_separator_it, point_further_left);
     std::sort(y_separator_it, _keypoints.end(), point_further_left);
 
-    cv::Point2i decoded_point{util::decode(_keypoints.cbegin(), h_separator_it, _avg_size),
-                  util::decode(h_separator_it, _keypoints.cend(), _avg_size)};
+    Point2i decoded_point{util::decode(_keypoints.cbegin(), h_separator_it, _avg_size),
+                          util::decode(h_separator_it, _keypoints.cend(), _avg_size)};
 
-    return Result<cv::Point2i>{decoded_point, Error::None};
+    return Result<Point2i>{decoded_point, Error::None};
 }
 
 void NotQRCodeDecoder::save_img(std::string name) {

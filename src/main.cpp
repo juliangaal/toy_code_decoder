@@ -24,8 +24,7 @@ int main(int argc, char **argv) {
     // this image encodes 0 (raw) degrees orientation and
     // 0101: 5
     // 1010: 10
-    cv::Mat im = cv::imread(file, cv::IMREAD_GRAYSCALE);
-    NotQRCodeDecoder decoder(im);
+    NotQRCodeDecoder decoder(file);
     
     decoder.calculate_keypoints(Draw::YES);
     auto orientation = decoder.calculate_orientation(Draw::YES);

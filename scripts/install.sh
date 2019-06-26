@@ -3,7 +3,7 @@
 set -e # exit on first fail
 sudo add-apt-repository -y universe
 sudo apt-get update -y
-sudo apt-get install -y build-essential git cmake
+sudo apt-get install -y build-essential git cmake python3-dev
 
 loc=$PWD
 mkdir -p $HOME/install_stuff
@@ -39,5 +39,6 @@ make -j4
 sudo make install
 
 cd $HOME && rm -rf $HOME/install_stuff
-cd $loc && mkdir -p build && cd build
+cd $loc && git submodule init && git submodule update
+mkdir -p build && cd build
 cmake -DCOMPILE_TEST=ON -DENABLE_AUTO_TEST=ON -DCMAKE_BUILD_TYPE=Release .. && make -j3
