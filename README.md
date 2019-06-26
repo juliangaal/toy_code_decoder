@@ -14,7 +14,7 @@ Experimental decoder for codes in this style:
 
 #### Dependencies
 * OpenCV 4.0
-* `pyhton3-dev` (for python bindings)
+* `pyhton(3)-dev` (for python bindings)
 * [fmt](https://github.com/fmtlib/fmt) (for tests)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)
 
