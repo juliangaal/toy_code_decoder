@@ -2,6 +2,7 @@
 // Created by julian on 26.06.19.
 //
 #include <notqrcode/notqrcode_decoder.hpp>
+#include <sstream>
 #include <notqrcode/util.hpp>
 #include <pybind11/pybind11.h>
 
@@ -16,6 +17,15 @@ PYBIND11_MODULE(notqrcode_py, m) {
             .def("toRad()", &qr::util::units::Degrees::to_rad)
             .def("toDeg()", &qr::util::units::Degrees::to_deg);
 
+    py::class_<qr::Point2i>(m, "Point2i")
+            .def(py::init<int>())
+            .def_readwrite("x", &qr::Point2i::x)
+            .def_readwrite("y", &qr::Point2i::y)
+            .def("__str__", [](const qr::Point2i& p) {
+                std::stringstream ss;
+                ss << "(" << p.x << "," << p.y << ")";
+                return ss.str();
+            });
 
     py::enum_<qr::Error>(m, "Error", py::arithmetic())
             .value("SeparationError", qr::Error::SeparationError)
@@ -30,9 +40,9 @@ PYBIND11_MODULE(notqrcode_py, m) {
         .def_readonly("value", &qr::Result<float>::val)
         .def_readonly("error", &qr::Result<float>::error);
 
-    py::class_<qr::Result<cv::Point_<int>>(m, "PointResult")
-        .def_readonly("value", &qr::Result<cv::Point_<int>::val)
-        .def_readonly("error", &qr::Result<cv::Point_<int>::error);
+    py::class_<qr::Result<qr::Point2i>>(m, "PointResult")
+        .def_readonly("value", &qr::Result<qr::Point2i>::val)
+        .def_readonly("error", &qr::Result<qr::Point2i>::error);
 
 
     qr.def(py::init<std::string&>())

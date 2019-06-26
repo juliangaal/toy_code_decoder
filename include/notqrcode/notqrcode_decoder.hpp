@@ -41,6 +41,15 @@ struct Result {
     Error error;
 };
 
+/// Point typee used for pybind convenience
+template <typename T>
+struct Point {
+    T x;
+    T y;
+};
+
+using Point2i = Point<int>;
+
 /**
  * Handles all operations necessary to decode Code (sample seen in README.md)
  */
@@ -95,7 +104,7 @@ public:
      * Decodes code
      * @return Result with cv::Point2i with coordinates and error type
      */
-    Result<cv::Point2i> decode();
+    Result<Point2i> decode();
 
     /**
      * Saves image
