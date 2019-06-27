@@ -11,23 +11,7 @@ find_package(Git REQUIRED)
 option(COMPILE_TEST "Compiles Tests" OFF)
 option(ENABLE_AUTO_TEST "Enables Tests Post build" OFF)
 option(GIT_SUBMODULE "Check submodules during build" ON)
-
-# Update submodules as needed
-if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
-    if(GIT_SUBMODULE)
-        message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-        endif()
-    endif()
-endif()
-
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/pybin11/CMakeLists.txt")
-    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
-endif()
+option(PY_BINDINGS "Enable Pyhton bindings generation" OFF)
 
 set(LIB notqrcode)
 set(PY_LIB notqrcode_py)
@@ -44,13 +28,33 @@ target_include_directories(${LIB} PUBLIC
                            $<INSTALL_INTERFACE:include>)
 target_link_libraries(${LIB} PUBLIC ${OpenCV_LIBS})
 
-# pybind11 bindings
-add_subdirectory(pybind11)
-pybind11_add_module(${PY_LIB} src/bindings.cpp)
-target_link_libraries(${PY_LIB} PRIVATE ${LIB})
-set_target_properties(${PY_LIB}
-                      PROPERTIES
-                      LIBRARY_OUTPUT_DIRECTORY ${PY_GEN_PATH})
+message(STATUS "PY_BINDINGS set to ${PY_BINDINGS}")
+if(PY_BINDINGS)
+    # Update submodules as needed
+    if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+        if(GIT_SUBMODULE)
+            message(STATUS "Submodule update")
+            execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                            RESULT_VARIABLE GIT_SUBMOD_RESULT)
+            if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+                message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+            endif()
+        endif()
+    endif()
+    
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/pybind11/CMakeLists.txt")
+        message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+    endif()
+    
+    # pybind11 bindings
+    add_subdirectory(pybind11)
+    pybind11_add_module(${PY_LIB} src/bindings.cpp)
+    target_link_libraries(${PY_LIB} PRIVATE ${LIB})
+    set_target_properties(${PY_LIB}
+                          PROPERTIES
+                          LIBRARY_OUTPUT_DIRECTORY ${PY_GEN_PATH})
+endif()
 
 # enable tests compilation when COMPILE_TEST=ON
 message(STATUS "COMPILE_TEST set to ${COMPILE_TEST}")
