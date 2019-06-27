@@ -22,15 +22,19 @@ Experimental decoder for codes in this style:
 
 #### Install
 ```bash
-git clone --recursive https://github.com/juliangaal/notqrcode/
+git clone https://github.com/juliangaal/notqrcode/
 cd notqrcode && mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make && sudo make install
 ```
 
 #### Install Python bindings
+```bash
+cmake -DPY_BINDINGS=ON -DCMAKE_BUILD_TYPE=Release -D<other_options> ..
+make
+```
 
-By default, the cmake variable `PY_GEN_PATH` is set to `scripts/`. The compiled library will placed there and can only be run from within that directory, unless specified in a different directory. e.g.
+*NOTE:* By default, the cmake variable `PY_GEN_PATH` is set to `scripts/`. The compiled library will placed there and can only be run from within that directory, unless specified in a different directory. e.g.
 `cmake -DPY_GEN_PATH=/some/path`
 
 The easiest way to use the generated library from *anywhere* is to add the output path `PY_GEN_PATH` to `PYTHONPATH`
@@ -68,12 +72,13 @@ int main(void) {
     if (decoded_point.error != Error::None)
         return 1;
 
-    fmt::print("Rotation: {}\n", orientation.val);
-    fmt::print("Decoded: ({},{})\n", decoded_point.val.x, decoded_point.val.y);
+    fmt::print("Rotation: {}, Decoded: ({},{})\n", orientation.val, decoded_point.val.x, decoded_point.val.y);
 
     return 0;
 }
 ```
+Easy Mode TODO
+
 ### Use with Python
 Manual mode
 ```python3
@@ -97,6 +102,7 @@ if result.error != 0:
 
 print("Decoded with orientation {:4.2f} deg and code {}".format(orientation.value, result.value))
 ```
+Easy Mode TODO
 
 #### Use with cmake
 ```cmake
