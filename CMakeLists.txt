@@ -11,7 +11,7 @@ find_package(Git REQUIRED)
 option(COMPILE_TEST "Compiles Tests" OFF)
 option(ENABLE_AUTO_TEST "Enables Tests Post build" OFF)
 option(GIT_SUBMODULE "Check submodules during build" ON)
-option(PY_BINDINGS "Enable Pyhton bindings generation" OFF)
+option(PY_BINDINGS "Enable Python bindings generation" OFF)
 
 set(LIB notqrcode)
 set(PY_LIB notqrcode_py)

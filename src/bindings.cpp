@@ -2,7 +2,6 @@
 // Created by julian on 26.06.19.
 //
 #include <notqrcode/notqrcode_decoder.hpp>
-#include <sstream>
 #include <notqrcode/util.hpp>
 #include <pybind11/pybind11.h>
 
@@ -47,7 +46,7 @@ PYBIND11_MODULE(notqrcode_py, m) {
         .def_readonly("error", &qr::Result<qr::Point2i>::error);
 
 
-    qr.def(py::init<std::string&>())
+    qr.def(py::init<cv::Mat&>())
        .def("decode", &qr::NotQRCodeDecoder::decode)
        .def("calculateKeypoints", &qr::NotQRCodeDecoder::calculate_keypoints, py::arg("draw") = qr::Draw::NO)
        .def("rotateKeypoints", &qr::NotQRCodeDecoder::rotate_keypoints)

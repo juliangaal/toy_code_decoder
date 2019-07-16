@@ -21,10 +21,8 @@ int main(int argc, char **argv) {
     fmt::print("OPENCV version {}.{}\n", CV_MAJOR_VERSION, CV_MINOR_VERSION);
     fmt::print("Got file {}\n", file);
 
-    // this image encodes 0 (raw) degrees orientation and
-    // 0101: 5
-    // 1010: 10
-    NotQRCodeDecoder decoder(file);
+    cv::Mat img = cv::imread(file, cv::IMREAD_GRAYSCALE);
+    NotQRCodeDecoder decoder(img);
     
     decoder.calculate_keypoints(Draw::YES);
     auto orientation = decoder.calculate_orientation(Draw::YES);

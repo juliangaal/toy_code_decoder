@@ -9,8 +9,9 @@
 
 using namespace notqrcode;
 
-NotQRCodeDecoder::NotQRCodeDecoder(std::string filename) : _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _params{},
-                                                           _keypoints{}, _orientation_point{}, _avg_size{} {
+NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat& img) :
+    _img{img}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
+
     if (_img.empty())
         throw std::runtime_error("opencv image empty!");
 
@@ -36,9 +37,9 @@ NotQRCodeDecoder::NotQRCodeDecoder(std::string filename) : _img{cv::imread(filen
     _keypoints.reserve(10);
 }
 
-NotQRCodeDecoder::NotQRCodeDecoder(std::string filename, cv::SimpleBlobDetector::Params params) :
-        _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _params{params}, _keypoints{},
-        _orientation_point{}, _avg_size{} {
+NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat& img, cv::SimpleBlobDetector::Params params) :
+        _img{img}, _params{params}, _keypoints{}, _orientation_point{}, _avg_size{} {
+
     if (_img.empty())
         throw std::runtime_error("opencv image empty!");
 

@@ -14,7 +14,7 @@ Experimental decoder for codes in this style:
 
 #### Dependencies
 * OpenCV 4.0
-* `pyhton(3)-dev` (for python bindings)
+* `python(3)-dev` (for python bindings)
 * [fmt](https://github.com/fmtlib/fmt) (for tests)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)
 
@@ -60,7 +60,8 @@ Manual mode
 #include <notqrcode/notqrcode_decoder.hpp>
 
 int main(void) {
-    notqrcode::NotQRCodeDecoder decoder(filename);
+    cv::Mat img = cv::imread("<file>", cv::IMREAD_GRAYSCALE); // from video or file
+    notqrcode::NotQRCodeDecoder decoder(img);
 
     decoder.calculate_keypoints(Draw::YES);
     auto orientation = decoder.calculate_orientation(Draw::YES);

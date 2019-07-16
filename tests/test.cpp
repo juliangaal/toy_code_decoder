@@ -77,7 +77,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_16_45_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);
@@ -90,7 +91,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_16_90_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);
@@ -103,7 +105,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_16_neg45_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);
@@ -116,7 +119,8 @@ TEST_CASE("Test rotation detection", "[test_rotation_detection]") {
 
     {
         std::string file = "rect_bw_16_neg135_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);
@@ -136,7 +140,8 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_16_neg135_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);
@@ -156,7 +161,8 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_16_neg45_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);
@@ -176,7 +182,8 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_16_90_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);
@@ -196,7 +203,8 @@ TEST_CASE("Test decoder values", "[test_decoder_values]") {
         // 1010: 10
         // 0101: 5
         std::string file = "rect_bw_16_45_xlarge";
-        NotQRCodeDecoder decoder(("../tests/pics/" + file + ".jpg"));
+        cv::Mat img = cv::imread(("../tests/pics/" + file + ".jpg"), cv::IMREAD_GRAYSCALE);
+        NotQRCodeDecoder decoder(img);
 
         decoder.calculate_keypoints(Draw::YES);
         auto orientation = decoder.calculate_orientation(YES);

@@ -3,7 +3,6 @@
 //
 
 #include <notqrcode/util.hpp>
-#include <iostream>
 
 using namespace notqrcode::util;
 

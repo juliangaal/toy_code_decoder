@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import notqrcode_py as qr
+import cv2
 import sys
 
-code = qr.NotQRCodeDecoder("../tests/pics/rect_bw_16_neg90_xlarge.jpg")
+img = cv2.imread("../tests/pics/rect_bw_16_neg90_xlarge.jpg", cv2.IMREAD_GRAYSCALE)
+code = qr.NotQRCodeDecoder(img)
 
 code.calculateKeypoints()
 orientation = code.calculateOrientation()

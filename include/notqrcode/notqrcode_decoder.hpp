@@ -7,7 +7,6 @@
 
 #include <notqrcode/util.hpp>
 #include <vector>
-#include <tuple>
 
 namespace notqrcode {
 
@@ -56,14 +55,14 @@ using Point2i = Point<int>;
 class NotQRCodeDecoder {
 public:
     /*
-     * Init with filename
+     * Init with cv::Matrix
      */
-    explicit NotQRCodeDecoder(std::string filename);
+    explicit NotQRCodeDecoder(cv::Mat& img);
 
     /*
-     * Init with filename and custom Simpleblobdetector params
+     * Init with cv::Matrix and custom Simpleblobdetector params
     */
-    NotQRCodeDecoder(std::string filename, cv::SimpleBlobDetector::Params params);
+    NotQRCodeDecoder(cv::Mat& img, cv::SimpleBlobDetector::Params params);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -114,7 +113,7 @@ public:
     void open_img(std::string name = "img");
 private:
     /// opencv image
-    cv::Mat _img;
+    cv::Mat& _img;
     /// simple blobdetector
     cv::SimpleBlobDetector::Params _params;
     /// vector to save keypoints

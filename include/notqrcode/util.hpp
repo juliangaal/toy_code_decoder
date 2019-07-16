@@ -5,8 +5,6 @@
 #ifndef NOTQRCODE_UTIL_HPP
 #define NOTQRCODE_UTIL_HPP
 
-#include <cmath>
-#include <iostream>
 #include <opencv2/opencv.hpp>
 #include <vector>
 
