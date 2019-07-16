@@ -21,9 +21,6 @@ int main(int argc, char **argv) {
     fmt::print("OPENCV version {}.{}\n", CV_MAJOR_VERSION, CV_MINOR_VERSION);
     fmt::print("Got file {}\n", file);
 
-    // this image encodes 0 (raw) degrees orientation and
-    // 0101: 5
-    // 1010: 10
     NotQRCodeDecoder decoder(file);
     
     decoder.calculate_keypoints(Draw::YES);
@@ -36,8 +33,7 @@ int main(int argc, char **argv) {
     if (decoded_point.error != Error::None)
         return 1;
 
-    fmt::print("Rotation: {}\n", orientation.val);
-    fmt::print("Decoded: ({},{})\n", decoded_point.val.x, decoded_point.val.y);
+    fmt::print("Rotation: {}, Decoded: ({},{})\n", orientation.val, decoded_point.val.x, decoded_point.val.y);
 
     return 0;
 }

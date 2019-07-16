@@ -4,6 +4,7 @@
 
 #include <notqrcode/util.hpp>
 #include <iostream>
+#include <iterator>
 
 using namespace notqrcode::util;
 
@@ -29,6 +30,24 @@ void calc::rotate(cv::Point2f &point, units::Degrees degrees) {
 
 float calc::norm(const cv::Point2f &point) {
     return std::sqrt(std::pow(point.x, 2.f) + std::pow(point.y, 2.f));
+}
+
+std::vector<cv::KeyPoint>::iterator
+calc::calculate_centroid(std::vector<cv::KeyPoint>::iterator begin,
+                         std::vector<cv::KeyPoint>::iterator end) {
+    cv::Point2f centroid{};
+    std::for_each(begin, end, [&centroid](const auto &p) {
+        centroid.x += p.pt.x;
+        centroid.y += p.pt.y;
+    });
+
+    float x_bits_num = std::distance(begin, end);
+    centroid.x /= x_bits_num;
+    centroid.y /= x_bits_num;
+
+    return util::partition_by_height(begin, end, centroid.y);
+
+//    return centroid;
 }
 
 int notqrcode::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,

@@ -2,7 +2,7 @@
 import notqrcode_py as qr
 import sys
 
-code = qr.NotQRCodeDecoder("../tests/pics/rect_bw_16_neg90_xlarge.jpg")
+code = qr.NotQRCodeDecoder("../tests/pics/rect_bw_16_0_xlarge.jpg")
 
 code.calculateKeypoints()
 orientation = code.calculateOrientation()

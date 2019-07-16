@@ -6,6 +6,7 @@
 #include <exception>
 #include <numeric>
 #include <algorithm>
+#include <future>
 
 using namespace notqrcode;
 
@@ -154,42 +155,54 @@ Result<Point2i> NotQRCodeDecoder::decode() {
     }
 
     // centroid of each x bits and y bits, needed for next separation height
-    cv::Point2f x_centroid{};
-    cv::Point2f y_centroid{};
+    auto x_separator_fut = std::async(std::launch::async, &util::calc::calculate_centroid, _keypoints.begin(), h_separator_it);
+    auto y_separator_fut = std::async(std::launch::async, &util::calc::calculate_centroid, h_separator_it, _keypoints.end());
 
-    std::for_each(_keypoints.begin(), h_separator_it, [&](const auto &p) {
-        x_centroid.x += p.pt.x;
-        x_centroid.y += p.pt.y;
-    });
-
-    float x_bits_num = std::distance(_keypoints.begin(), h_separator_it);
-    x_centroid.x /= x_bits_num;
-    x_centroid.y /= x_bits_num;
-
-    std::for_each(h_separator_it, _keypoints.end(), [&](const auto &p) {
-        y_centroid.x += p.pt.x;
-        y_centroid.y += p.pt.y;
-    });
-
-    float y_bits_num = std::distance(_keypoints.begin(), h_separator_it);
-    y_centroid.x /= y_bits_num;
-    y_centroid.y /= y_bits_num;
-
-    // this separator separates the 2 levels of bits above horizontal line, so the x bits
-    const auto x_separator_it = util::partition_by_height(_keypoints.begin(), h_separator_it, x_centroid.y);
-    // if separator fails for any reason, return
-    if (x_separator_it == _keypoints.end()) {
+    const auto x_separator_it = x_separator_fut.get();
+    if (x_separator_it == _keypoints.cend()) {
         return Result<Point2i>{Point2i{}, Error::SeparationError};
     }
+
+    const auto y_separator_it = y_separator_fut.get();
+    if (y_separator_it == _keypoints.cend()) {
+        return Result<Point2i>{Point2i{}, Error::SeparationError};
+    }
+//    cv::Point2f x_centroid{};// = centroid_x_fut.get();
+//    cv::Point2f y_centroid{};// = centroid_y_fut.get();
+
+//    std::for_each(_keypoints.begin(), h_separator_it, [&](const auto &p) {
+//        x_centroid.x += p.pt.x;
+//        x_centroid.y += p.pt.y;
+//    });
+//
+//    float x_bits_num = std::distance(_keypoints.begin(), h_separator_it);
+//    x_centroid.x /= x_bits_num;
+//    x_centroid.y /= x_bits_num;
+//
+//    std::for_each(h_separator_it, _keypoints.end(), [&](const auto &p) {
+//        y_centroid.x += p.pt.x;
+//        y_centroid.y += p.pt.y;
+//    });
+//
+//    float y_bits_num = std::distance(h_separator_it, _keypoints.end());
+//    y_centroid.x /= y_bits_num;
+//    y_centroid.y /= y_bits_num;
+
+//     this separator separates the 2 levels of bits above horizontal line, so the x bits
+//    const auto x_separator_it = util::partition_by_height(_keypoints.begin(), h_separator_it, x_centroid.y);
+    // if separator fails for any reason, return
+//    if (x_separator_it == _keypoints.end()) {
+//        return Result<Point2i>{Point2i{}, Error::SeparationError};
+//    }
 
     // this separator separates the 2 levels of bits below horizontal line, so the y bits
-    const auto y_separator_it = util::partition_by_height(h_separator_it, _keypoints.end(), y_centroid.y);
-    // if separator fails for any reason, return
-    if (y_separator_it == _keypoints.end()) {
-        return Result<Point2i>{Point2i{}, Error::SeparationError};
-    }
+//    const auto y_separator_it = util::partition_by_height(h_separator_it, _keypoints.end(), y_centroid.y);
+//     if separator fails for any reason, return
+//    if (y_separator_it == _keypoints.end()) {
+//        return Result<Point2i>{Point2i{}, Error::SeparationError};
+//    }
 
-    // lambda helper function
+    // lambda helper function, determines if point a is to the left of point b
     auto point_further_left = [](const auto &a, const auto &b) { return a.pt.x < b.pt.x; };
 
     // Sort keypoints for x bits from left to right, left being the smallest after sorting

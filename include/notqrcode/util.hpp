@@ -109,6 +109,16 @@ namespace calc {
 void rotate(cv::Point2f &point, units::Degrees degrees);
 
 /**
+ * Calculates centroid from keypoints.begin() to separator
+ * @param begin to use for centroid calculation
+ * @param end iterator of point that marks last point to use for calculation
+ * @return cv::Point2f that contains point
+ */
+std::vector<cv::KeyPoint>::iterator calculate_centroid(
+        std::vector<cv::KeyPoint>::iterator begin,
+        std::vector<cv::KeyPoint>::iterator end);
+
+/**
  * Calculates vector length
  * @param point to calculate length from
  * @return vector length
