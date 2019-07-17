@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(OpenCV 3.0 REQUIRED)
+find_package(OpenCV 4.0 REQUIRED)
 find_package(Git REQUIRED)
 
 option(COMPILE_TEST "Compiles Tests" OFF)
