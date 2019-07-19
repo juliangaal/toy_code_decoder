@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.1)
 project(NotQRCode VERSION 0.1)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(OpenCV 3.0 REQUIRED)
+find_package(OpenCV 4.0 REQUIRED)
 find_package(Git REQUIRED)
 
 option(COMPILE_TEST "Compiles Tests" OFF)
@@ -21,35 +21,36 @@ set(PY_GEN_PATH ${PROJECT_SOURCE_DIR}/scripts CACHE STRING "Where generated libr
 set(SOURCES src/notqrcode_decoder.cpp src/util.cpp)
 set(HEADERS include/notqrcode/notqrcode_decoder.hpp include/notqrcode/util.hpp)
 
-add_library(${LIB} SHARED ${SOURCES} ${HEADERS})
+add_library(${LIB} STATIC ${SOURCES} ${HEADERS})
 target_compile_options(${LIB} PRIVATE -Wall -Weffc++ -Wpedantic -Werror -ffast-math -Wextra)
 target_include_directories(${LIB} PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
 target_link_libraries(${LIB} PUBLIC ${OpenCV_LIBS})
 
-message(STATUS "PY_BINDINGS set to ${PY_BINDINGS}")
-if(PY_BINDINGS)
-    # Update submodules as needed
-    if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
-        if(GIT_SUBMODULE)
-            message(STATUS "Submodule update")
-            execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                            RESULT_VARIABLE GIT_SUBMOD_RESULT)
-            if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-                message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-            endif()
+function(update_submodule package_name)
+    if(GIT_SUBMODULE && NOT EXISTS "${CMAKE_SOURCE_DIR}/${package_name}")
+        message(STATUS "Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
         endif()
     endif()
-    
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/pybind11/CMakeLists.txt")
+
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/${package_name}/CMakeLists.txt")
         message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
     endif()
-    
+endfunction(update_submodule)
+
+message(STATUS "PY_BINDINGS set to ${PY_BINDINGS}")
+if(PY_BINDINGS)
+    update_submodule(pybind11)
+
     # pybind11 bindings
     add_subdirectory(pybind11)
-    pybind11_add_module(${PY_LIB} src/bindings.cpp)
+    pybind11_add_module(${PY_LIB} bindings/bindings.cpp)
     target_link_libraries(${PY_LIB} PRIVATE ${LIB})
     set_target_properties(${PY_LIB}
                           PROPERTIES
@@ -59,8 +60,9 @@ endif()
 # enable tests compilation when COMPILE_TEST=ON
 message(STATUS "COMPILE_TEST set to ${COMPILE_TEST}")
 if(COMPILE_TEST)
-    find_package(Catch2 REQUIRED)
     find_package(fmt REQUIRED)
+    update_submodule(doctest)
+    add_subdirectory(doctest)
     enable_testing()
 
     add_executable(unit_test tests/test.cpp)
@@ -69,7 +71,7 @@ if(COMPILE_TEST)
     target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
     target_link_libraries(unit_test PRIVATE
                           ${OpenCV_LIBS}
-                          Catch2::Catch2
+                          doctest
                           notqrcode)
 
     add_executable(main src/main.cpp)
@@ -79,6 +81,14 @@ if(COMPILE_TEST)
                           ${OpenCV_LIBS}
                           fmt::fmt
                           notqrcode)
+
+    add_executable(video src/video.cpp)
+    target_include_directories(video PRIVATE include)
+    target_compile_options(video PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(video PRIVATE
+            ${OpenCV_LIBS}
+            fmt::fmt
+            notqrcode)
 endif()
 
 # enable target test when ENABLE_AUTO_TEST=ON

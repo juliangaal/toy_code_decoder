@@ -5,9 +5,6 @@
 #include <notqrcode/notqrcode_decoder.hpp>
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
-#include <algorithm>
-#include <iterator>
-#include <tuple>
 
 using namespace notqrcode;
 
@@ -22,7 +19,7 @@ int main(int argc, char **argv) {
     fmt::print("Got file {}\n", file);
 
     cv::Mat img = cv::imread(file, cv::IMREAD_GRAYSCALE);
-    NotQRCodeDecoder decoder(img);
+    auto decoder = NotQRCodeDecoder::cv_img(img);
     
     decoder.calculate_keypoints(Draw::YES);
     auto orientation = decoder.calculate_orientation(Draw::YES);

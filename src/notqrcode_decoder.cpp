@@ -3,14 +3,75 @@
 //
 
 #include <notqrcode/notqrcode_decoder.hpp>
-#include <exception>
 #include <numeric>
 #include <algorithm>
 
 using namespace notqrcode;
 
-NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat& img) :
-    _img{img}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
+NotQRCodeDecoder NotQRCodeDecoder::video(const VideoParams &vid_params) {
+    return NotQRCodeDecoder(std::move(vid_params));
+}
+
+NotQRCodeDecoder
+NotQRCodeDecoder::video_parameterized(const VideoParams &vid_params, const cv::SimpleBlobDetector::Params &blob_params) {
+    return NotQRCodeDecoder(std::move(vid_params), std::move(blob_params));
+}
+
+NotQRCodeDecoder NotQRCodeDecoder::cv_img(const cv::Mat &img) {
+    return NotQRCodeDecoder(std::move(img));
+}
+
+NotQRCodeDecoder NotQRCodeDecoder::cv_img_parameterized(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params) {
+    return NotQRCodeDecoder(std::move(img), std::move(params));
+}
+
+NotQRCodeDecoder NotQRCodeDecoder::file(std::string filename) {
+    return NotQRCodeDecoder(std::move(filename));
+}
+
+NotQRCodeDecoder NotQRCodeDecoder::file(std::string filename, const cv::SimpleBlobDetector::Params &params) {
+    return NotQRCodeDecoder(std::move(filename), std::move(params));
+}
+
+NotQRCodeDecoder::NotQRCodeDecoder(const cv::Mat &img) :
+    _img{std::move(img)}, _video{}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
+
+        if (_img.empty())
+            throw std::runtime_error("opencv image empty!");
+
+    // set simple blob detector params
+    // Change thresholds
+    _params.minThreshold = 10;
+    _params.maxThreshold = 200;
+
+    // Filter by Area.
+    _params.filterByArea = false;
+
+    // Filter by Circularity
+    _params.filterByCircularity = false;
+
+    // Filter by Convexity
+    _params.filterByConvexity = true;
+    _params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    _params.filterByInertia = true;
+    _params.minInertiaRatio = 0.01;
+
+    _keypoints.reserve(10);
+}
+
+NotQRCodeDecoder::NotQRCodeDecoder(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params) :
+        _img{std::move(img)}, _video{}, _params{params}, _keypoints{}, _orientation_point{}, _avg_size{} {
+
+    if (_img.empty())
+        throw std::runtime_error("opencv image empty!");
+
+    _keypoints.reserve(10);
+}
+
+NotQRCodeDecoder::NotQRCodeDecoder(std::string filename) :
+        _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _video{}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{}{
 
     if (_img.empty())
         throw std::runtime_error("opencv image empty!");
@@ -37,13 +98,63 @@ NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat& img) :
     _keypoints.reserve(10);
 }
 
-NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat& img, cv::SimpleBlobDetector::Params params) :
-        _img{img}, _params{params}, _keypoints{}, _orientation_point{}, _avg_size{} {
+NotQRCodeDecoder::NotQRCodeDecoder(std::string filename, const cv::SimpleBlobDetector::Params &params) :
+        _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _video{}, _params{params}, _keypoints{}, _orientation_point{}, _avg_size{} {
 
     if (_img.empty())
         throw std::runtime_error("opencv image empty!");
 
     _keypoints.reserve(10);
+}
+
+NotQRCodeDecoder::NotQRCodeDecoder(const VideoParams &vid_params) :
+        _img{}, _video{cv::VideoCapture(vid_params.id)}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
+
+    if(!_video.isOpened())  // check if we succeeded
+        throw std::runtime_error("Couldn't open video at /dev/video" + std::to_string(vid_params.id));
+
+    // set simple blob detector params
+    // Change thresholds
+    _params.minThreshold = 10;
+    _params.maxThreshold = 200;
+
+    // Filter by Area.
+    _params.filterByArea = false;
+
+    // Filter by Circularity
+    _params.filterByCircularity = false;
+
+    // Filter by Convexity
+    _params.filterByConvexity = true;
+    _params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    _params.filterByInertia = true;
+    _params.minInertiaRatio = 0.01;
+
+    _keypoints.reserve(10);
+
+    _video.set(cv::CAP_PROP_FRAME_WIDTH, vid_params.width);
+    _video.set(cv::CAP_PROP_FRAME_HEIGHT, vid_params.height);
+    _video.set(cv::CAP_PROP_FPS, vid_params.frame_rate);
+
+    _video >> _img;
+
+}
+
+NotQRCodeDecoder::NotQRCodeDecoder(const VideoParams &vid_params, const cv::SimpleBlobDetector::Params &blob_params) :
+    _img{}, _video{cv::VideoCapture(vid_params.id)}, _params{blob_params}, _keypoints{}, _orientation_point{}, _avg_size{} {
+
+    if(!_video.isOpened())  // check if we succeeded
+        throw std::runtime_error("Couldn't open video at /dev/video" + std::to_string(vid_params.id));
+
+    _keypoints.reserve(10);
+
+    _video.set(cv::CAP_PROP_FRAME_WIDTH, vid_params.width);
+    _video.set(cv::CAP_PROP_FRAME_HEIGHT, vid_params.height);
+    _video.set(cv::CAP_PROP_FPS, vid_params.frame_rate);
+
+    _video >> _img;
 }
 
 void NotQRCodeDecoder::calculate_keypoints(Draw draw) {
@@ -52,12 +163,12 @@ void NotQRCodeDecoder::calculate_keypoints(Draw draw) {
     detector->detect(_img, _keypoints);
 
     switch (draw) {
-        case YES:
+        case Draw::YES:
             for (const auto &point: _keypoints) {
                 cv::circle(_img, point.pt, 2, cv::Scalar(255, 255, 255), -1);
             }
             break;
-        case NO:
+        case Draw::NO:
         default:
             break;
     }
@@ -97,19 +208,20 @@ Result<float> NotQRCodeDecoder::calculate_orientation(Draw draw) {
     float orientation = std::atan2(vec.y, vec.x) * (180.0f / PIf) * -1;
 
     switch (draw) {
-        case YES: {
+        case Draw::YES: {
             // transformation back into opencv coordinates, that's why they are so many negative numbers here
             // -vec.y, -orientation_point.pt.y, -centroid.y ...
             // draws line across screen
+            const auto& img = _img;
             float slope = -vec.y / vec.x;
             cv::Point2f p{};
-            cv::Point2f q(_img.cols, _img.rows);
+            cv::Point2f q(img.cols, img.rows);
             p.y = -(_orientation_point.pt.x - p.x) * slope + -_orientation_point.pt.y;
             q.y = -(centroid.x - q.x) * slope + -centroid.y;
-            cv::line(_img, p, q, cv::Scalar(128, 128, 128), 2, 8, 0);
+            cv::line(img, p, q, cv::Scalar(128, 128, 128), 2, 8, 0);
             break;
         }
-        case NO:
+        case Draw::NO:
         default:
             break;
     }
@@ -214,5 +326,24 @@ void NotQRCodeDecoder::save_img(std::string name) {
 void NotQRCodeDecoder::open_img(std::string name) {
     cv::imshow(name, _img);
     cv::waitKey(0);
+}
+
+void NotQRCodeDecoder::next_frame() {
+    if (!_video.isOpened()) {
+        throw std::runtime_error("Video was never initialized! Use NotQRCodeDetector::video(args...)");
+    }
+
+    _keypoints.clear();
+    _avg_size = 0.0f;
+    _orientation_point = cv::KeyPoint{};
+    _video >> _img;
+}
+
+void NotQRCodeDecoder::change_blob_params(const cv::SimpleBlobDetector::Params &params) {
+    _params = params;
+}
+
+const cv::Mat& NotQRCodeDecoder::img() const {
+    return _img;
 }
 

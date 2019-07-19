@@ -13,7 +13,7 @@ namespace notqrcode {
 /**
  * Draw keypoints/orientation in image with Draw::YES
  */
-enum Draw {
+enum class Draw {
     YES = 0,
     NO,
 };
@@ -21,7 +21,7 @@ enum Draw {
 /**
  * Error types for NotQRCodeDecoder
  */
-enum Error {
+enum class Error {
     None = 0,
     InvalidKeyPoints,
     SeparationError,
@@ -47,6 +47,13 @@ struct Point {
     T y;
 };
 
+struct VideoParams {
+    size_t id;
+    size_t width;
+    size_t height;
+    size_t frame_rate;
+};
+
 using Point2i = Point<int>;
 
 /**
@@ -54,15 +61,53 @@ using Point2i = Point<int>;
  */
 class NotQRCodeDecoder {
 public:
-    /*
-     * Init with cv::Matrix
+    /**
+     * Factory method: initialize QRCodeDecoder with video stream on
+     * @param video_device_id: id of /dev/videoX
+     * @param params: VideoParams video stream parameters
+     * @return NotQRCodeDecoder object
      */
-    explicit NotQRCodeDecoder(cv::Mat& img);
+    static NotQRCodeDecoder video(const VideoParams &vid_params);
 
-    /*
-     * Init with cv::Matrix and custom Simpleblobdetector params
+    /**
+     * Factory method: initialize QRCodeDecoder with video stream on and custom blobdetector parameters
+     * @param video_device_id: id of /dev/videoX
+     * @param params: VideoParams video stream parameters
+     * @param params:  custom cv::SimpleBlobdetector::Params
+     * @return NotQRCodeDecoder object
+     */
+    static NotQRCodeDecoder
+    video_parameterized(const VideoParams &vid_params, const cv::SimpleBlobDetector::Params &blob_params);
+
+    /**
+     * Initialize with open cv Image
+     * @param img: cv::Mat
+     * @return NotQRCodeDecoder object
+     */
+    static NotQRCodeDecoder cv_img(const cv::Mat &img);
+
+    /**
+     * Initialize with open cv Image and custom BlobDetector parameters
+     * @param img: cv::Mat
+     * @param params: custom cv::SimpleBlobDetector::Params
+     * @return NotQRCodeDecoder object
+     */
+    static NotQRCodeDecoder cv_img_parameterized(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params);
+
+    /**
+     * Initialize with open filename
+     * @param filename: filename (path, relative from binary)
+     * @return NotQRCodeDecoder object
     */
-    NotQRCodeDecoder(cv::Mat& img, cv::SimpleBlobDetector::Params params);
+    static NotQRCodeDecoder file(std::string filename);
+
+    /**
+     * Initialize with open filename and custom SimpleBlobDetector parameters
+     * @param filename: filename (path, relative from binary)
+     * @param: custom cv::SimpleBlobDetector::Params params
+     * @return NotQRCodeDecoder object
+    */
+    static NotQRCodeDecoder file(std::string filename, const cv::SimpleBlobDetector::Params &params);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -74,19 +119,31 @@ public:
      * Calculates keypoints
      * @param mark: marks keypoint when chosen (optional)
      */
-    void calculate_keypoints(Draw mark = NO);
+    void calculate_keypoints(Draw mark = Draw::NO);
 
     /**
      * Calculates orientation from keypoint
      * @return Result with orientation, error type
      */
-    Result<float> calculate_orientation(Draw mark = NO);
+    Result<float> calculate_orientation(Draw mark = Draw::NO);
 
     /**
      * Rotate keypoints by specified amout
      * @param degrees amount to rotate
      */
     void rotate_keypoints(notqrcode::util::units::Degrees degrees);
+
+    /**
+     * Get's next frame in cv::VideoCapture stream and resets all parameters used for
+     * previous detection of keypoints
+     */
+    void next_frame();
+
+    /**
+     * cv::Mat image getter
+     * @return img
+     */
+    const cv::Mat& img() const;
 
     /**
      * Rotate opencv image
@@ -101,6 +158,12 @@ public:
     Result<Point2i> decode();
 
     /**
+     * Change SimpleBlobDetector params on the go
+     * @param params: custom cv::SimpleBlobDetector::Params struct
+     */
+     void change_blob_params(const cv::SimpleBlobDetector::Params &params);
+
+    /**
      * Saves image
      * @param name to save with (optional)
      */
@@ -112,8 +175,54 @@ public:
      */
     void open_img(std::string name = "img");
 private:
+
+    /**
+     * NotQRCode decoder from cv::Mat
+     * @param img: cv::Mat
+     */
+    explicit NotQRCodeDecoder(const cv::Mat &img);
+
+    /**
+     * NotQRCode decoder from cv::Mat
+     * @param img: cv::Mat
+     * @param params: custom cv::SimpleBlobDetector::Params params
+    */
+    NotQRCodeDecoder(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params);
+
+    /**
+     * Initialize with open filename
+     * @param filename: filename (path, relative from binary)
+    */
+    NotQRCodeDecoder(std::string filename);
+
+    /**
+     * Initialize with open filename and custom SimpleBlobDetector parameters
+     * @param filename: filename (path, relative from binary)
+     * @param params: custom cv::SimpleBlobDetector::Params params
+    */
+    NotQRCodeDecoder(std::string filename, const cv::SimpleBlobDetector::Params &params);
+
+    /**
+      * initialize QRCodeDecoder with video stream on
+      * @param video_device_id: id of /dev/videoX
+      * @param params: VideoParams video stream parameters
+      * @return NotQRCodeDecoder object
+      */
+    NotQRCodeDecoder(const VideoParams &vid_params);
+
+    /**
+     * initialize QRCodeDecoder with video stream on and custom blobdetector parameters
+     * @param video_device_id: id of /dev/videoX
+     * @param params: VideoParams video stream parameters
+     * @param params:  custom cv::SimpleBlobdetector::Params
+     * @return NotQRCodeDecoder object
+     */
+    NotQRCodeDecoder(const VideoParams &vid_params, const cv::SimpleBlobDetector::Params &blob_params);
+
     /// opencv image
-    cv::Mat& _img;
+    cv::Mat _img;
+    /// opencv video stream
+    cv::VideoCapture _video;
     /// simple blobdetector
     cv::SimpleBlobDetector::Params _params;
     /// vector to save keypoints

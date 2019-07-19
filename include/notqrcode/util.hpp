@@ -26,9 +26,10 @@ constexpr static float PIf = static_cast<float>(M_PI);
  * objects smaller than avg_size are treated as 0s
  */
 int decode(std::vector<cv::KeyPoint>::const_iterator begin,
-           std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
+           std::vector<cv::KeyPoint>::const_iterator end, float avg_size) noexcept ;
 
-std::vector<cv::KeyPoint>::iterator partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end, float height);
+std::vector<cv::KeyPoint>::iterator
+partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end, float height) noexcept ;
 
 namespace units {
 
@@ -86,14 +87,14 @@ using UnitVector = cv::Point2f;
  * @param b Point 2
  * @return UnitVector of distance and orientation between a and b
  */
-geo::UnitVector connecting_vector(const cv::Point2f &a, const cv::Point2f &b);
+geo::UnitVector connecting_vector(const cv::Point2f &a, const cv::Point2f &b) noexcept;
 
 /**
  * Converts opencv coordinates in something usable, see
  * see https://stackoverflow.com/questions/25642532/opencv-pointx-y-represent-column-row-or-row-column
  * @param point
  */
-void to_cartesian(cv::Point2f &point);
+void to_cartesian(cv::Point2f &point) noexcept;
 
 } // namespace notqrcode::util::geo
 
@@ -104,14 +105,14 @@ namespace calc {
  * @param point to rotate
  * @param degrees amount of degrees to rotate
  */
-void rotate(cv::Point2f &point, units::Degrees degrees);
+void rotate(cv::Point2f &point, units::Degrees degrees) noexcept;
 
 /**
  * Calculates vector length
  * @param point to calculate length from
  * @return vector length
  */
-float norm(const cv::Point2f &point);
+float norm(const cv::Point2f &point) noexcept;
 
 } // namespace notqrcode::util::calc
 } // namespace notqrcode::util
