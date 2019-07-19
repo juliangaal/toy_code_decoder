@@ -29,7 +29,7 @@ target_include_directories(${LIB} PUBLIC
 target_link_libraries(${LIB} PUBLIC ${OpenCV_LIBS})
 
 function(update_submodule package_name)
-    if(GIT_SUBMODULE && NOT EXISTS "${CMAKE_SOURCE_DIR}/${package_name}")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/${package_name}/CMakeLists.txt")
         message(STATUS "Submodule update")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -74,7 +74,7 @@ if(COMPILE_TEST)
                           doctest
                           notqrcode)
 
-    add_executable(main src/main.cpp)
+    add_executable(main tests/main.cpp)
     target_include_directories(main PRIVATE include)
     target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
     target_link_libraries(main PRIVATE
@@ -82,7 +82,8 @@ if(COMPILE_TEST)
                           fmt::fmt
                           notqrcode)
 
-    add_executable(video src/video.cpp)
+    add_executable(video tests/video.cpp)
+    add_test(NAME video COMMAND video)
     target_include_directories(video PRIVATE include)
     target_compile_options(video PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
     target_link_libraries(video PRIVATE
