@@ -52,25 +52,78 @@ struct Point {
 
 using Point2i = Point<int>;
 
+struct ImgProcessingParams {
+    size_t gaussian_size;
+    size_t threshold;
+    size_t threshold_repl_value;
+};
+
 /**
  * Handles all operations necessary to decode Code (sample seen in README.md)
  */
 class NotQRCodeDecoder {
 public:
 
-    static NotQRCodeDecoder img(std::string filename, cv::ImreadModes mode);
-    static NotQRCodeDecoder img_py(std::string filename, int mode);
+    /**
+     *
+     * @param filename
+     * @param mode
+     * @return
+     */
+    static NotQRCodeDecoder file(std::string filename);
+
+    /**
+     *
+     * @param filename
+     * @param mode
+     * @param blob_params
+     * @return
+     */
+    static NotQRCodeDecoder
+    file_with_params(std::string filename, const ImgProcessingParams &img_proc_params,
+                     const cv::SimpleBlobDetector::Params &blob_params);
+
+
+    /**
+     *
+     * @param img
+     * @return
+     */
+    static NotQRCodeDecoder img(cv::Mat& img);
+
+    /**
+     *
+     * @param img
+     * @param blob_params
+     * @return
+     */
+    static NotQRCodeDecoder img_with_params(cv::Mat &img, const ImgProcessingParams &img_proc_params,
+                                            const cv::SimpleBlobDetector::Params &blob_params);
+
+    /**
+     *
+     * @return
+     */
     static NotQRCodeDecoder video();
-    static NotQRCodeDecoder video_with_params(const cv::SimpleBlobDetector::Params &params);
+
+    /**
+     *
+     * @param blob_params
+     * @return
+     */
+    static NotQRCodeDecoder video_with_params(const ImgProcessingParams &img_proc_params,
+                                              const cv::SimpleBlobDetector::Params &blob_params);
+
     /*
      * Init with cv::Matrix
      */
-    explicit NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip = NO);
+    explicit NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip);
 
     /*
      * Init with cv::Matrix and custom Simpleblobdetector params
     */
-    NotQRCodeDecoder(cv::Mat &img, const cv::SimpleBlobDetector::Params &params, SkipEmptyCheck skip = NO);
+    NotQRCodeDecoder(cv::Mat &img, const ImgProcessingParams &img_proc_params,
+                     const cv::SimpleBlobDetector::Params &params, SkipEmptyCheck skip);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -120,12 +173,32 @@ public:
      */
     void open_img(std::string name = "img");
 
+    /**
+     * Overloaded operator to load image from cv::VideoCapture into cv::Mat
+     * @param code
+     * @param cap
+     * @return
+     */
     friend NotQRCodeDecoder& operator<<(NotQRCodeDecoder& code, cv::VideoCapture& cap);
+
+    /**
+     *
+     * @return
+     */
+    inline const cv::Mat& img() const { return _img; }
+
+    /**
+     * Prepare image for detecting: Apply gaussian blur, threshold and convert to grayscale
+     */
+    void prep_image();
+
 private:
     /// opencv image
     cv::Mat& _img;
     /// simple blobdetector
-    cv::SimpleBlobDetector::Params _params;
+    cv::SimpleBlobDetector::Params _blob_params;
+    /// image processing params
+    ImgProcessingParams _img_proc_params;
     /// vector to save keypoints
     std::vector<cv::KeyPoint> _keypoints;
     /// cv::Keypoint to save orientation point

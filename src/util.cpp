@@ -6,12 +6,6 @@
 
 using namespace notqrcode::util;
 
-bool notqrcode::util::centroids_eq_dist_to(const cv::Point2f &centroid_a, const cv::Point2f &centroid_b,
-                                           const cv::Point2f &point,
-                                           float margin) {
-    return (std::abs(calc::euc_dist(centroid_a, point) - calc::euc_dist(centroid_b, point))) < margin;
-}
-
 geo::UnitVector geo::connecting_vector(const cv::Point2f &a, const cv::Point2f &b) {
     float x = b.x - a.x;
     float y = b.y - a.y;

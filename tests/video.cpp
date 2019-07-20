@@ -14,7 +14,7 @@ int main(void) {
 
     // opencv setup
     size_t vid_id = 0;
-    size_t frame_rate = 24;
+    size_t frame_rate = 10;
     cv::VideoCapture cap(vid_id); // open the default camera
     if(!cap.isOpened())  // check if we succeeded
         throw std::runtime_error(fmt::format("Couldn't open video at /dev/video{}", vid_id));
@@ -25,36 +25,45 @@ int main(void) {
 
     // blob detection parameters
     // Change thresholds
-    cv::SimpleBlobDetector::Params params;
-    params.minThreshold = 10;
-    params.maxThreshold = 200;
+    cv::SimpleBlobDetector::Params blob_params;
+    blob_params.minThreshold = 30;
+    blob_params.maxThreshold = 200;
 
     // Filter by Area.
-    params.filterByArea = true;
-    params.minArea = 3.14159 * 10.0f * 10.0f; // Min 10.0f diameter
-    params.maxArea = 3.14159 * 40.0f * 40.0f; // Max 30.0f diameter
+    blob_params.filterByArea = true;
+    blob_params.minArea = 3.14159 * 10.0f * 10.0f; // Min 10.0f diameter
+    blob_params.maxArea = 3.14159 * 50.0f * 50.0f; // Max 30.0f diameter
 
     // filter by color: only black
-    params.filterByColor = 0;
+    blob_params.filterByColor = true;
+    blob_params.blobColor = 0;
 
     // Filter by Circularity
-    params.filterByCircularity = false;
+    blob_params.filterByCircularity = false;
 
     // Filter by Convexity
-    params.filterByConvexity = true;
-    params.minConvexity = 0.87;
+    blob_params.filterByConvexity = true;
+    blob_params.minConvexity = 0.87;
 
     // Filter by Inertia
-    params.filterByInertia = true;
-    params.minInertiaRatio = 0.01;
+    blob_params.filterByInertia = true;
+    blob_params.minInertiaRatio = 0.01;
 
-    auto decoder = NotQRCodeDecoder::video_with_params(params);
+    notqrcode::ImgProcessingParams img_params;
+    img_params.gaussian_size = 5;
+    img_params.threshold = 245;
+    img_params.threshold_repl_value = 255;
+
+    auto decoder = NotQRCodeDecoder::video_with_params(img_params, blob_params);
 
     for(;;) {
         decoder << cap;
 
         decoder.calculate_keypoints(Draw::YES);
-        auto orientation = decoder.calculate_orientation(Draw::YES);
+        cv::imshow("Video", decoder.img());
+        if(cv::waitKey(30) >= 0) break;
+
+        auto orientation = decoder.calculate_orientation();
         if (orientation.error != Error::None)
             continue;
 
@@ -63,7 +72,7 @@ int main(void) {
         if (decoded_point.error != Error::None)
             continue;
 
-        fmt::print("Rotation: {} - Decoded: ({},{})\n", orientation.val, decoded_point.val.x, decoded_point.val.y);
+        fmt::print("Rotation: {:.3f}° - Decoded: ({},{})\n", orientation.val, decoded_point.val.x, decoded_point.val.y);
     }
     return 0;
 }
