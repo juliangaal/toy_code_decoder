@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(OpenCV 3.0 REQUIRED)
+find_package(OpenCV 4.0 REQUIRED)
 find_package(Git REQUIRED)
 
 option(COMPILE_TEST "Compiles Tests" OFF)
@@ -49,7 +49,7 @@ if(PY_BINDINGS)
     
     # pybind11 bindings
     add_subdirectory(pybind11)
-    pybind11_add_module(${PY_LIB} src/bindings.cpp)
+    pybind11_add_module(${PY_LIB} bindings/bindings.cpp)
     target_link_libraries(${PY_LIB} PRIVATE ${LIB})
     set_target_properties(${PY_LIB}
                           PROPERTIES
@@ -67,18 +67,17 @@ if(COMPILE_TEST)
     add_test(NAME unit_test COMMAND unit_test)
     target_include_directories(unit_test PRIVATE include)
     target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_link_libraries(unit_test PRIVATE
-                          ${OpenCV_LIBS}
-                          Catch2::Catch2
-                          notqrcode)
+    target_link_libraries(unit_test PRIVATE ${OpenCV_LIBS} Catch2::Catch2 notqrcode)
 
-    add_executable(main src/main.cpp)
-    target_include_directories(main PRIVATE include)
-    target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(main PRIVATE
-                          ${OpenCV_LIBS}
-                          fmt::fmt
-                          notqrcode)
+    add_executable(file tests/file.cpp)
+    target_include_directories(file PRIVATE include)
+    target_compile_options(file PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(file PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
+
+    add_executable(video tests/video.cpp)
+    target_include_directories(video PRIVATE include)
+    target_compile_options(video PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(video PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
 endif()
 
 # enable target test when ENABLE_AUTO_TEST=ON

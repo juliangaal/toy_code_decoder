@@ -6,6 +6,12 @@
 
 using namespace notqrcode::util;
 
+bool notqrcode::util::centroids_eq_dist_to(const cv::Point2f &centroid_a, const cv::Point2f &centroid_b,
+                                           const cv::Point2f &point,
+                                           float margin) {
+    return (std::abs(calc::euc_dist(centroid_a, point) - calc::euc_dist(centroid_b, point))) < margin;
+}
+
 geo::UnitVector geo::connecting_vector(const cv::Point2f &a, const cv::Point2f &b) {
     float x = b.x - a.x;
     float y = b.y - a.y;
@@ -30,6 +36,10 @@ float calc::norm(const cv::Point2f &point) {
     return std::sqrt(std::pow(point.x, 2.f) + std::pow(point.y, 2.f));
 }
 
+float calc::euc_dist(const cv::Point2f a, const cv::Point2f b) {
+    return std::sqrt(std::pow((b.x - a.x), 2.0f) + std::pow((b.y - a.y), 2.0f));
+}
+
 int notqrcode::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
                             std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
     int val = 0;
@@ -52,4 +62,35 @@ notqrcode::util::partition_by_height(std::vector<cv::KeyPoint>::iterator begin, 
     });
 
     return separator_it;
+}
+
+cv::ImreadModes notqrcode::util::python::int_to_imread_mode(int mode) noexcept {
+    switch (mode) {
+        case -1:
+            return cv::IMREAD_UNCHANGED;
+        case 0:
+            return cv::IMREAD_GRAYSCALE;
+        case 1:
+            return cv::IMREAD_COLOR;
+        case 2:
+            return cv::IMREAD_ANYDEPTH;
+        case 4:
+            return cv::IMREAD_ANYCOLOR;
+        case 8:
+            return cv::IMREAD_LOAD_GDAL;
+        case 16:
+            return cv::IMREAD_REDUCED_GRAYSCALE_2;
+        case 17:
+            return cv::IMREAD_REDUCED_COLOR_2;
+        case 32:
+            return cv::IMREAD_REDUCED_GRAYSCALE_4;
+        case 33:
+            return cv::IMREAD_REDUCED_COLOR_4;
+        case 64:
+            return cv::IMREAD_REDUCED_GRAYSCALE_8;
+        case 65:
+            return cv::IMREAD_REDUCED_COLOR_8;
+        default:
+            return cv::IMREAD_GRAYSCALE;
+    }
 }

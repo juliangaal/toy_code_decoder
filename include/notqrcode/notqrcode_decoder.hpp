@@ -18,6 +18,8 @@ enum Draw {
     NO,
 };
 
+using SkipEmptyCheck = Draw;
+
 /**
  * Error types for NotQRCodeDecoder
  */
@@ -25,6 +27,7 @@ enum Error {
     None = 0,
     InvalidKeyPoints,
     SeparationError,
+    CentroidDetectionError,
 };
 
 /**
@@ -54,15 +57,20 @@ using Point2i = Point<int>;
  */
 class NotQRCodeDecoder {
 public:
+
+    static NotQRCodeDecoder img(std::string filename, cv::ImreadModes mode);
+    static NotQRCodeDecoder img_py(std::string filename, int mode);
+    static NotQRCodeDecoder video();
+    static NotQRCodeDecoder video_with_params(const cv::SimpleBlobDetector::Params &params);
     /*
      * Init with cv::Matrix
      */
-    explicit NotQRCodeDecoder(cv::Mat& img);
+    explicit NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip = NO);
 
     /*
      * Init with cv::Matrix and custom Simpleblobdetector params
     */
-    NotQRCodeDecoder(cv::Mat& img, cv::SimpleBlobDetector::Params params);
+    NotQRCodeDecoder(cv::Mat &img, const cv::SimpleBlobDetector::Params &params, SkipEmptyCheck skip = NO);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -111,6 +119,8 @@ public:
      * @param name of the window (optional)
      */
     void open_img(std::string name = "img");
+
+    friend NotQRCodeDecoder& operator<<(NotQRCodeDecoder& code, cv::VideoCapture& cap);
 private:
     /// opencv image
     cv::Mat& _img;

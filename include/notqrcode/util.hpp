@@ -30,6 +30,8 @@ int decode(std::vector<cv::KeyPoint>::const_iterator begin,
 
 std::vector<cv::KeyPoint>::iterator partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end, float height);
 
+bool centroids_eq_dist_to(const cv::Point2f& centroid_a, const cv::Point2f& centroid_b, const cv::Point2f& point, float margin = 1.5f);
+
 namespace units {
 
 /**
@@ -113,7 +115,20 @@ void rotate(cv::Point2f &point, units::Degrees degrees);
  */
 float norm(const cv::Point2f &point);
 
+float euc_dist(const cv::Point2f a, const cv::Point2f b);
+
 } // namespace notqrcode::util::calc
+
+namespace python {
+    /**
+     * Converts int to cv::ImreadModes for python wrapper
+     * @param mode: cv::ImreadModes as int
+     * @return
+     */
+    cv::ImreadModes int_to_imread_mode(int mode) noexcept;
+
+} // namespace notqrcode::util::python
+
 } // namespace notqrcode::util
 } // namespace notqrcode
 
