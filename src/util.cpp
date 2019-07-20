@@ -53,3 +53,34 @@ notqrcode::util::partition_by_height(std::vector<cv::KeyPoint>::iterator begin, 
 
     return separator_it;
 }
+
+cv::ImreadModes python::int_to_imread_mode(int mode) noexcept {
+    switch (mode) {
+        case -1:
+            return cv::IMREAD_UNCHANGED;
+        case 0:
+            return cv::IMREAD_GRAYSCALE;
+        case 1:
+            return cv::IMREAD_COLOR;
+        case 2:
+            return cv::IMREAD_ANYDEPTH;
+        case 4:
+            return cv::IMREAD_ANYCOLOR;
+        case 8:
+            return cv::IMREAD_LOAD_GDAL;
+        case 16:
+            return cv::IMREAD_REDUCED_GRAYSCALE_2;
+        case 17:
+            return cv::IMREAD_REDUCED_COLOR_2;
+        case 32:
+            return cv::IMREAD_REDUCED_GRAYSCALE_4;
+        case 33:
+            return cv::IMREAD_REDUCED_COLOR_4;
+        case 64:
+            return cv::IMREAD_REDUCED_GRAYSCALE_8;
+        case 65:
+            return cv::IMREAD_REDUCED_COLOR_8;
+        default:
+            return cv::IMREAD_GRAYSCALE;
+    }
+}

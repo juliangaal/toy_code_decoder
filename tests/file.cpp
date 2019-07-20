@@ -18,8 +18,7 @@ int main(int argc, char **argv) {
     fmt::print("OPENCV version {}.{}\n", CV_MAJOR_VERSION, CV_MINOR_VERSION);
     fmt::print("Got file {}\n", file);
 
-    cv::Mat img = cv::imread(file, cv::IMREAD_GRAYSCALE);
-    auto decoder = NotQRCodeDecoder::cv_img(img);
+    auto decoder = NotQRCodeDecoder::file(file, cv::IMREAD_GRAYSCALE);
     
     decoder.calculate_keypoints(Draw::YES);
     auto orientation = decoder.calculate_orientation(Draw::YES);
@@ -31,8 +30,7 @@ int main(int argc, char **argv) {
     if (decoded_point.error != Error::None)
         return 1;
 
-    fmt::print("Rotation: {}\n", orientation.val);
-    fmt::print("Decoded: ({},{})\n", decoded_point.val.x, decoded_point.val.y);
+    fmt::print("Rotation: {} - Decoded: ({},{})\n", orientation.val, decoded_point.val.x, decoded_point.val.y);
 
     return 0;
 }

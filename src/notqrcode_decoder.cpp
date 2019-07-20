@@ -9,31 +9,43 @@
 using namespace notqrcode;
 
 NotQRCodeDecoder NotQRCodeDecoder::video(const VideoParams &vid_params) {
-    return NotQRCodeDecoder(std::move(vid_params));
+    return NotQRCodeDecoder(vid_params);
 }
 
 NotQRCodeDecoder
 NotQRCodeDecoder::video_parameterized(const VideoParams &vid_params, const cv::SimpleBlobDetector::Params &blob_params) {
-    return NotQRCodeDecoder(std::move(vid_params), std::move(blob_params));
+    return NotQRCodeDecoder(vid_params, blob_params);
 }
 
-NotQRCodeDecoder NotQRCodeDecoder::cv_img(const cv::Mat &img) {
+NotQRCodeDecoder NotQRCodeDecoder::cv_img(cv::Mat img) {
     return NotQRCodeDecoder(std::move(img));
 }
 
-NotQRCodeDecoder NotQRCodeDecoder::cv_img_parameterized(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params) {
-    return NotQRCodeDecoder(std::move(img), std::move(params));
+NotQRCodeDecoder NotQRCodeDecoder::cv_img_parameterized(cv::Mat img, const cv::SimpleBlobDetector::Params &params) {
+    return NotQRCodeDecoder(std::move(img), params);
 }
 
-NotQRCodeDecoder NotQRCodeDecoder::file(std::string filename) {
-    return NotQRCodeDecoder(std::move(filename));
+NotQRCodeDecoder NotQRCodeDecoder::file(std::string filename, cv::ImreadModes mode) {
+    return NotQRCodeDecoder(std::move(filename), mode);
 }
 
-NotQRCodeDecoder NotQRCodeDecoder::file(std::string filename, const cv::SimpleBlobDetector::Params &params) {
-    return NotQRCodeDecoder(std::move(filename), std::move(params));
+NotQRCodeDecoder NotQRCodeDecoder::file_parameterized(std::string filename, cv::ImreadModes mode,
+                                                      const cv::SimpleBlobDetector::Params &params) {
+    return NotQRCodeDecoder(std::move(filename), mode, params);
 }
 
-NotQRCodeDecoder::NotQRCodeDecoder(const cv::Mat &img) :
+NotQRCodeDecoder NotQRCodeDecoder::file_py(std::string filename, int mode) {
+    cv::ImreadModes cv_mode = util::python::int_to_imread_mode(mode);
+    return NotQRCodeDecoder(filename, cv_mode);
+}
+
+NotQRCodeDecoder
+NotQRCodeDecoder::file_parameterized_py(std::string filename, size_t mode, const cv::SimpleBlobDetector::Params &params) {
+    cv::ImreadModes cv_mode = util::python::int_to_imread_mode(mode);
+    return NotQRCodeDecoder(filename, cv_mode, params);
+}
+
+NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat img) :
     _img{std::move(img)}, _video{}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{} {
 
         if (_img.empty())
@@ -61,7 +73,7 @@ NotQRCodeDecoder::NotQRCodeDecoder(const cv::Mat &img) :
     _keypoints.reserve(10);
 }
 
-NotQRCodeDecoder::NotQRCodeDecoder(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params) :
+NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat img, const cv::SimpleBlobDetector::Params &params) :
         _img{std::move(img)}, _video{}, _params{params}, _keypoints{}, _orientation_point{}, _avg_size{} {
 
     if (_img.empty())
@@ -70,8 +82,8 @@ NotQRCodeDecoder::NotQRCodeDecoder(const cv::Mat &img, const cv::SimpleBlobDetec
     _keypoints.reserve(10);
 }
 
-NotQRCodeDecoder::NotQRCodeDecoder(std::string filename) :
-        _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _video{}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{}{
+NotQRCodeDecoder::NotQRCodeDecoder(std::string filename, cv::ImreadModes mode) :
+        _img{cv::imread(filename, mode)}, _video{}, _params{}, _keypoints{}, _orientation_point{}, _avg_size{}{
 
     if (_img.empty())
         throw std::runtime_error("opencv image empty!");
@@ -98,8 +110,9 @@ NotQRCodeDecoder::NotQRCodeDecoder(std::string filename) :
     _keypoints.reserve(10);
 }
 
-NotQRCodeDecoder::NotQRCodeDecoder(std::string filename, const cv::SimpleBlobDetector::Params &params) :
-        _img{cv::imread(filename, cv::IMREAD_GRAYSCALE)}, _video{}, _params{params}, _keypoints{}, _orientation_point{}, _avg_size{} {
+NotQRCodeDecoder::NotQRCodeDecoder(std::string filename, cv::ImreadModes mode,
+                                   const cv::SimpleBlobDetector::Params &params) :
+        _img{cv::imread(filename, mode)}, _video{}, _params{params}, _keypoints{}, _orientation_point{}, _avg_size{} {
 
     if (_img.empty())
         throw std::runtime_error("opencv image empty!");

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(NotQRCode VERSION 0.1)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -21,7 +21,7 @@ set(PY_GEN_PATH ${PROJECT_SOURCE_DIR}/scripts CACHE STRING "Where generated libr
 set(SOURCES src/notqrcode_decoder.cpp src/util.cpp)
 set(HEADERS include/notqrcode/notqrcode_decoder.hpp include/notqrcode/util.hpp)
 
-add_library(${LIB} STATIC ${SOURCES} ${HEADERS})
+add_library(${LIB} SHARED ${SOURCES} ${HEADERS})
 target_compile_options(${LIB} PRIVATE -Wall -Weffc++ -Wpedantic -Werror -ffast-math -Wextra)
 target_include_directories(${LIB} PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -69,27 +69,22 @@ if(COMPILE_TEST)
     add_test(NAME unit_test COMMAND unit_test)
     target_include_directories(unit_test PRIVATE include)
     target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_link_libraries(unit_test PRIVATE
-                          ${OpenCV_LIBS}
-                          doctest
-                          notqrcode)
+    target_link_libraries(unit_test PRIVATE ${OpenCV_LIBS} doctest notqrcode)
 
-    add_executable(main tests/main.cpp)
-    target_include_directories(main PRIVATE include)
-    target_compile_options(main PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(main PRIVATE
-                          ${OpenCV_LIBS}
-                          fmt::fmt
-                          notqrcode)
+    add_executable(img tests/img.cpp)
+    target_include_directories(img PRIVATE include)
+    target_compile_options(img PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(img PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
+
+    add_executable(file tests/file.cpp)
+    target_include_directories(file PRIVATE include)
+    target_compile_options(file PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(file PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
 
     add_executable(video tests/video.cpp)
-    add_test(NAME video COMMAND video)
     target_include_directories(video PRIVATE include)
     target_compile_options(video PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(video PRIVATE
-            ${OpenCV_LIBS}
-            fmt::fmt
-            notqrcode)
+    target_link_libraries(video PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
 endif()
 
 # enable target test when ENABLE_AUTO_TEST=ON

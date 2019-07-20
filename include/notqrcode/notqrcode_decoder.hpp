@@ -13,7 +13,7 @@ namespace notqrcode {
 /**
  * Draw keypoints/orientation in image with Draw::YES
  */
-enum class Draw {
+enum Draw {
     YES = 0,
     NO,
 };
@@ -21,7 +21,7 @@ enum class Draw {
 /**
  * Error types for NotQRCodeDecoder
  */
-enum class Error {
+enum Error {
     None = 0,
     InvalidKeyPoints,
     SeparationError,
@@ -84,7 +84,7 @@ public:
      * @param img: cv::Mat
      * @return NotQRCodeDecoder object
      */
-    static NotQRCodeDecoder cv_img(const cv::Mat &img);
+    static NotQRCodeDecoder cv_img(cv::Mat img);
 
     /**
      * Initialize with open cv Image and custom BlobDetector parameters
@@ -92,22 +92,45 @@ public:
      * @param params: custom cv::SimpleBlobDetector::Params
      * @return NotQRCodeDecoder object
      */
-    static NotQRCodeDecoder cv_img_parameterized(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params);
+    static NotQRCodeDecoder cv_img_parameterized(cv::Mat img, const cv::SimpleBlobDetector::Params &params);
 
     /**
      * Initialize with open filename
      * @param filename: filename (path, relative from binary)
+     * @param mode: https://docs.opencv.org/3.1.0/d4/da8/group__imgcodecs.html#ga61d9b0126a3e57d9277ac48327799c80
      * @return NotQRCodeDecoder object
     */
-    static NotQRCodeDecoder file(std::string filename);
+    static NotQRCodeDecoder file(std::string filename, cv::ImreadModes mode);
 
     /**
      * Initialize with open filename and custom SimpleBlobDetector parameters
      * @param filename: filename (path, relative from binary)
+     * @param mode: https://docs.opencv.org/3.1.0/d4/da8/group__imgcodecs.html#ga61d9b0126a3e57d9277ac48327799c80
      * @param: custom cv::SimpleBlobDetector::Params params
      * @return NotQRCodeDecoder object
     */
-    static NotQRCodeDecoder file(std::string filename, const cv::SimpleBlobDetector::Params &params);
+    static NotQRCodeDecoder
+    file_parameterized(std::string filename, cv::ImreadModes mode, const cv::SimpleBlobDetector::Params &params);
+
+    /**
+     * FOR PYTHON WRAPPER ONLY
+     * Initialize with open filename
+     * @param filename: filename (path, relative from binary)
+     * @param mode AS SIZE_T: https://docs.opencv.org/3.1.0/d4/da8/group__imgcodecs.html#ga61d9b0126a3e57d9277ac48327799c80
+     * @return NotQRCodeDecoder object
+    */
+    static NotQRCodeDecoder file_py(std::string filename, int mode);
+
+    /**
+     * FOR PYTHON WRAPPER ONLY
+     * Initialize with open filename and custom SimpleBlobDetector parameters
+     * @param filename: filename (path, relative from binary)
+     * @param mode AS SIZE_T: https://docs.opencv.org/3.1.0/d4/da8/group__imgcodecs.html#ga61d9b0126a3e57d9277ac48327799c80
+     * @param: custom cv::SimpleBlobDetector::Params params
+     * @return NotQRCodeDecoder object
+    */
+    static NotQRCodeDecoder
+    file_parameterized_py(std::string filename, size_t mode, const cv::SimpleBlobDetector::Params &params);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -180,27 +203,29 @@ private:
      * NotQRCode decoder from cv::Mat
      * @param img: cv::Mat
      */
-    explicit NotQRCodeDecoder(const cv::Mat &img);
+    explicit NotQRCodeDecoder(cv::Mat img);
 
     /**
      * NotQRCode decoder from cv::Mat
      * @param img: cv::Mat
      * @param params: custom cv::SimpleBlobDetector::Params params
     */
-    NotQRCodeDecoder(const cv::Mat &img, const cv::SimpleBlobDetector::Params &params);
+    NotQRCodeDecoder(cv::Mat img, const cv::SimpleBlobDetector::Params &params);
 
     /**
      * Initialize with open filename
      * @param filename: filename (path, relative from binary)
+     * @param mode: https://docs.opencv.org/3.1.0/d4/da8/group__imgcodecs.html#ga61d9b0126a3e57d9277ac48327799c80
     */
-    NotQRCodeDecoder(std::string filename);
+    NotQRCodeDecoder(std::string filename, cv::ImreadModes mode);
 
     /**
      * Initialize with open filename and custom SimpleBlobDetector parameters
      * @param filename: filename (path, relative from binary)
+     * @param mode: https://docs.opencv.org/3.1.0/d4/da8/group__imgcodecs.html#ga61d9b0126a3e57d9277ac48327799c80
      * @param params: custom cv::SimpleBlobDetector::Params params
     */
-    NotQRCodeDecoder(std::string filename, const cv::SimpleBlobDetector::Params &params);
+    NotQRCodeDecoder(std::string filename, cv::ImreadModes mode, const cv::SimpleBlobDetector::Params &params);
 
     /**
       * initialize QRCodeDecoder with video stream on
@@ -208,7 +233,7 @@ private:
       * @param params: VideoParams video stream parameters
       * @return NotQRCodeDecoder object
       */
-    NotQRCodeDecoder(const VideoParams &vid_params);
+    explicit NotQRCodeDecoder(const VideoParams &vid_params);
 
     /**
      * initialize QRCodeDecoder with video stream on and custom blobdetector parameters

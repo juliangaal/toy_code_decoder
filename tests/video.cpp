@@ -44,7 +44,6 @@ int main() {
     auto decoder = NotQRCodeDecoder::video_parameterized(vid_params, blob_params);
     
     for(;;) {
-        cv::imshow("Frame", decoder.img());
         decoder.next_frame();
 
         decoder.calculate_keypoints(notqrcode::Draw::YES);
@@ -61,9 +60,7 @@ int main() {
         }
 
         fmt::print("Rotation: {} - Decoded {}:{}\n", orientation.val, decoded_point.val.x, decoded_point.val.y);
-        cv::waitKey(0);
     }
-
 
     return 0;
 }

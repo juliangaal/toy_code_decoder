@@ -115,6 +115,15 @@ void rotate(cv::Point2f &point, units::Degrees degrees) noexcept;
 float norm(const cv::Point2f &point) noexcept;
 
 } // namespace notqrcode::util::calc
+
+namespace python {
+    /**
+     * Converts int to cv::ImreadModes for python wrapper
+     * @param mode: cv::ImreadModes as int
+     * @return
+     */
+    cv::ImreadModes int_to_imread_mode(int mode) noexcept;
+}
 } // namespace notqrcode::util
 } // namespace notqrcode
 
