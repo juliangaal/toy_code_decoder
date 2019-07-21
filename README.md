@@ -1,29 +1,27 @@
-# Not QR Code
+# Not QR Code ![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode/ref.svg?style=flat-square)
 Experimental decoder for codes in this style:
 
-<p float="center">
-  <img src="./tests/pics/rect_bw_16_show_off.jpg" width="300" />
-</p>
+<img align="left" src="./tests/pics/rect_bw_16_show_off.jpg" width="300" />
+<br>
 
-#### Properties
+### Properties
 * thick bar used to calculate absolute rotation
 * x,y coordinate encoding: 
-  * binary representation: big rects represent 1s, small rects represent 0s
-  * Once properly rotated (thick bar in the east), rects above middle line represent x coordinate, below y coordinate
+  - binary representation: big rects represent 1s, small rects represent 0s
+  - Once properly rotated (thick bar in the east), rects above middle line represent x coordinate, below y coordinate
 * e.g. the picture above will decode to orientation: 0, coordinate: (165, 165)
 
-# Demo
+## Demo
 ![](./gif/notqrcodedecoder.gif)
 
 #### Dependencies
 * OpenCV 3.0
 * [fmt](https://github.com/fmtlib/fmt) (for tests, examples)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)
-* cmake 3.1+ must be installed
 
-![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode/ref.svg?style=flat-square) with ubuntu 18.04 and
-clang 7, 8 and g++ 7 - 9. Any c++14 compatible compiler should work.
-
+#### Requirements
+* cmake 3.0+
+* tested with clang 7, 8 and g++ 7 - 9. Any c++14 compatible compiler should work.
 
 #### Install
 ```bash
@@ -34,9 +32,9 @@ make && sudo make install
 ```
 
 #### CMake Options
-* `-D COMPILE_TESTS=ON` (default OFF) will compile tests and expose target `test` in the cmake Makefile. You can then either run `make test` in the build directory, or `ctest --verbose` for verbose output in case of test failures.
-* `-D ENABLE_AUTO_TEST=ON` (default OFF) will run unit test on every build, if enabled with above command
-* `-D COMPILE_EXAMPLES=ON` (default OFF) will compile examples in `examples` directory
+* `-D COMPILE_TESTS=ON` (default `OFF`) will compile tests and expose target `test` in the cmake Makefile. You can then either run `make test` in the build directory, or `ctest --verbose` for verbose output in case of test failures.
+* `-D ENABLE_AUTO_TEST=ON` (default `OFF`) will run unit test on every build, if enabled with above command
+* `-D COMPILE_EXAMPLES=ON` (default `OFF`) will compile examples in `examples` directory
 
 #### Usage
 
