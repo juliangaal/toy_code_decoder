@@ -52,12 +52,33 @@ struct Point {
 
 using Point2i = Point<int>;
 
+/**
+ * Image Processing Params: adjusts image before
+ * decoding takes place
+ */
 struct ImgProcessingParams {
+    /// size of gaussian filter, e.g. 3 for 3x3 gaussian blur matrix
     int gaussian_size;
+    /// threshold for pixels that will be applied to cv::threshold
     int threshold;
+    /// thresholded pixel replacement values
     int threshold_repl_value;
+    /**
+     * error margin when calculating distance between centroids
+     * if error !<= centroid_dist_margin decoding errors
+     */
     float centroid_dist_margin;
+    /**
+     * error margin when calculating distance between centroids and orientation point
+     * if error !<= origin_pt_dist_margin decoding errors
+     */
     float orientation_pt_dist_margin;
+    /**
+     * Depending on the physical code, the centroid distance varies in comparison to
+     * the distance between centroids and orientation point.
+     * e.g. the ration for tests/pics/rect_bw_16_90_xlarge.jpg is 0.75
+     */
+    float centroid_orientation_ratio;
 };
 
 /**
@@ -67,19 +88,16 @@ class NotQRCodeDecoder {
 public:
 
     /**
-     *
-     * @param filename
-     * @param mode
-     * @return
+     * image instance from file of decoder with custom parameters
+     * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder file(std::string filename);
 
     /**
-     *
-     * @param filename
-     * @param mode
-     * @param blob_params
-     * @return
+     * image instance from file of decoder with custom parameters
+     * @param img_proc_params: ImgProcessingParams
+     * @param blob_params: cv::SimpleBlobDetector::Params
+     * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder
     file_with_params(std::string filename, const ImgProcessingParams &img_proc_params,
@@ -87,43 +105,49 @@ public:
 
 
     /**
-     *
-     * @param img
-     * @return
+     * image instance from cv::Mat of decoder with custom parameters
+     * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder img(cv::Mat& img);
 
     /**
-     *
-     * @param img
-     * @param blob_params
-     * @return
+     * image instance from cv::Mat of decoder with custom parameters
+     * @param img_proc_params: ImgProcessingParams
+     * @param blob_params: cv::SimpleBlobDetector::Params
+     * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder img_with_params(cv::Mat &img, const ImgProcessingParams &img_proc_params,
                                             const cv::SimpleBlobDetector::Params &blob_params);
 
     /**
-     *
-     * @return
+     * Creates video instance for decoder
+     * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder video();
 
     /**
-     *
-     * @param blob_params
-     * @return
+     * Video instance of decoder with custom parameters
+     * @param img_proc_params: ImgProcessingParams
+     * @param blob_params: cv::SimpleBlobDetector::Params
+     * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder video_with_params(const ImgProcessingParams &img_proc_params,
                                               const cv::SimpleBlobDetector::Params &blob_params);
 
-    /*
+    /**
      * Init with cv::Matrix
+     * @param img: cv::Mat
+     * @param skip: whether or not to skip image empty check (only YES when using video)
      */
     explicit NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip);
 
-    /*
+    /**
      * Init with cv::Matrix and custom Simpleblobdetector params
-    */
+     * @param img: cv::Mat
+     * @param img_proc_params
+     * @param params
+     * @param skip: whether or not to skip image empty check (only YES when using video)
+     */
     NotQRCodeDecoder(cv::Mat &img, const ImgProcessingParams &img_proc_params,
                      const cv::SimpleBlobDetector::Params &params, SkipEmptyCheck skip);
 
@@ -185,7 +209,7 @@ public:
 
     /**
      *
-     * @return
+     * @return reference to current image (cv::Mat)
      */
     inline const cv::Mat& img() const { return _img; }
 

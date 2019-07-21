@@ -80,8 +80,7 @@ NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip) :
     _blob_params.minConvexity = 0.87;
 
     // Filter by Inertia
-    _blob_params.filterByInertia = true;
-    _blob_params.minInertiaRatio = 0.01;
+    _blob_params.filterByInertia = false;
 
     // setup image processing params
     _img_proc_params.gaussian_size = 3;
@@ -89,8 +88,9 @@ NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip) :
     _img_proc_params.threshold_repl_value = 255;
     _img_proc_params.centroid_dist_margin = 1.5f;
     _img_proc_params.orientation_pt_dist_margin = 1.5f;
+    _img_proc_params.centroid_orientation_ratio = 0.75f;
 
-    _keypoints.reserve(10);
+    _keypoints.reserve(17);
 
     if (skip == NO) prep_image();
 }
@@ -102,7 +102,7 @@ NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img, const ImgProcessingParams &img_
     if (skip == SkipEmptyCheck::NO && _img.empty())
         throw std::runtime_error("opencv image empty!");
 
-    _keypoints.reserve(10);
+    _keypoints.reserve(17);
 
     if (skip == NO) prep_image();
 }
@@ -237,16 +237,24 @@ Result<Point2i> NotQRCodeDecoder::decode() {
     y_centroid.x /= y_bits_num;
     y_centroid.y /= y_bits_num;
 
-//    std::cout << util::calc::euc_dist(x_centroid, y_centroid) << " vs " << util::calc::euc_dist(x_centroid, _orientation_point.pt) << " vs "<< util::calc::euc_dist(y_centroid, _orientation_point.pt) << "\n";
+    // last checks:
+    // if the distance of the centroids to the orientation differ my more than
+    // _img_proc_params.orientation_pt_dist_margin, error!
     float dist_centroid_x_orientation_pt = util::calc::euc_dist(x_centroid, _orientation_point.pt);
     float dist_centroid_y_orientation_pt = util::calc::euc_dist(y_centroid, _orientation_point.pt);
     bool same_dist_to_orientation_pt =
             std::abs(dist_centroid_x_orientation_pt - dist_centroid_y_orientation_pt) <
             _img_proc_params.orientation_pt_dist_margin;
 
+    // if the distance between the centroids differs more than _img_proc_params.centroid_dist_margin from
+    // _img_proc_params.centroid_orientation_ratio * <mean_of_centroids>, errors!
+    // all this does is make sure, that there is a virtual "triangle", between orientation points,
+    // centroid 1 and centroid 2
+    // if all these checks passed, all keypoints have been recognized AT THE CORRECT POSITIONS
     float dist_centroids = util::calc::euc_dist(x_centroid, y_centroid);
     bool correct_centroid_distance =
-            std::abs((0.75 * (dist_centroid_x_orientation_pt + dist_centroid_y_orientation_pt)/2.f) -
+            std::abs((_img_proc_params.centroid_orientation_ratio *
+            (dist_centroid_x_orientation_pt + dist_centroid_y_orientation_pt)/2.f) -
             dist_centroids) < _img_proc_params.centroid_dist_margin;
 
     if (not same_dist_to_orientation_pt or not correct_centroid_distance) {

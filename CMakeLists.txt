@@ -7,7 +7,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(OpenCV 3.0)
 
-option(COMPILE_TEST "Compiles Tests" OFF)
+option(COMPILE_TESTS "Compiles Tests" OFF)
+option(COMPILE_EXAMPLES "Compiles Examples" OFF)
 option(ENABLE_AUTO_TEST "Enables Tests Post build" OFF)
 
 set(LIB notqrcode)
@@ -24,8 +25,8 @@ target_include_directories(${LIB} PUBLIC
 target_link_libraries(${LIB} PUBLIC ${OpenCV_LIBS})
 
 # enable tests compilation when COMPILE_TEST=ON
-message(STATUS "COMPILE_TEST set to ${COMPILE_TEST}")
-if(COMPILE_TEST)
+message(STATUS "COMPILE_TESTS set to ${COMPILE_TESTS}")
+if(COMPILE_TESTS)
     find_package(Catch2 REQUIRED)
     find_package(fmt REQUIRED)
     enable_testing()
@@ -41,12 +42,28 @@ if(COMPILE_TEST)
     target_include_directories(integration_test PRIVATE include)
     target_compile_options(integration_test PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
     target_link_libraries(integration_test PRIVATE ${OpenCV_LIBS} Catch2::Catch2 notqrcode fmt::fmt)
+endif()
 
-    add_executable(video tests/video.cpp)
+if(COMPILE_TESTS)
+    find_package(fmt REQUIRED)
+
+    add_executable(video examples/video.cpp)
     target_include_directories(video PRIVATE include)
     target_compile_options(video PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
     target_link_libraries(video PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
+
+    add_executable(file examples/file.cpp)
+    target_include_directories(file PRIVATE include)
+    target_compile_options(file PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(file PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
+
+    add_executable(img examples/img.cpp)
+    target_include_directories(img PRIVATE include)
+    target_compile_options(img PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(img PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
 endif()
+
+message(STATUS "COMPILE_EXAMPLES set to ${COMPILE_EXAMPLES}")
 
 # enable target test when ENABLE_AUTO_TEST=ON
 message(STATUS "ENABLE_AUTO_TEST set to ${ENABLE_AUTO_TEST}")
@@ -62,7 +79,7 @@ endif()
 # generate docs
 add_custom_target(doc)
 add_custom_command(TARGET doc
-                   COMMAND cd ${PROJECT_SOURCE_DIR}/docs && doxygen Doxyfile && moxygen .)
+                   COMMAND cd ${PROJECT_SOURCE_DIR}/docs && doxygen Doxyfile)
 
 # install
 install(TARGETS notqrcode

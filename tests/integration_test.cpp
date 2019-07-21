@@ -39,6 +39,7 @@ TEST_CASE("Integration Test") {
     // so high values are required
     img_params.centroid_dist_margin = 8.f;
     img_params.orientation_pt_dist_margin = 8.f;
+    img_params.centroid_orientation_ratio = 0.75f;
 
     {
         auto img = cv::imread("../tests/pics/rect_bw_16_neg90_xlarge.jpg", cv::IMREAD_GRAYSCALE);
@@ -47,6 +48,7 @@ TEST_CASE("Integration Test") {
         decoder.save_img("neg_90_test.jpg");
 
         auto orientation = decoder.calculate_orientation(Draw::YES);
+
         if (orientation.error != Error::None)
             throw std::runtime_error(fmt::format("Orientation calculation Error: {}", orientation.error));
 

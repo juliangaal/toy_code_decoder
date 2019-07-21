@@ -55,7 +55,9 @@ int main(void) {
     img_params.threshold_repl_value = 255;
     img_params.centroid_dist_margin = 1.5f;
     img_params.orientation_pt_dist_margin = 1.5f;
+    img_params.centroid_orientation_ratio = 0.75f;
 
+    // parameters are optional, tune for your widht, height etc...
     auto decoder = NotQRCodeDecoder::video_with_params(img_params, blob_params);
 
     for(;;) {
