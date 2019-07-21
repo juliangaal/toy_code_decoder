@@ -5,15 +5,15 @@ Experimental decoder for codes in this style:
   <img src="./tests/pics/rect_bw_16_show_off.jpg" width="400" />
 </p>
 
-# Demo
-![](./gif/notqrcodedecoder.gif)
-
 #### Properties
 * thick bar used to calculate absolute rotation
 * x,y coordinate encoding: 
   * binary representation: big rects represent 1s, small rects represent 0s
   * Once properly rotated (thick bar in the east), rects above middle line represent x coordinate, below y coordinate
 * e.g. the picture above will decode to orientation: 0, coordinate: (165, 165)
+
+# Demo
+![](./gif/notqrcodedecoder.gif)
 
 #### Dependencies
 * OpenCV 3.0+
