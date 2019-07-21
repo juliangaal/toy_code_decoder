@@ -134,7 +134,7 @@ void NotQRCodeDecoder::calculate_keypoints(Draw draw) {
     switch (draw) {
         case YES:
             for (const auto &point: _keypoints) {
-                cv::circle(_img, point.pt, 4, cv::Scalar(255, 255, 255), -1);
+                cv::circle(_img, point.pt, 4, cv::Scalar(192, 192, 192), -1);
             }
             break;
         case NO:
