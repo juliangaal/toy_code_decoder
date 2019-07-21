@@ -1,6 +1,4 @@
 # Not QR Code ![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode/ref.svg?style=flat-square)
-Experimental decoder for codes in this style:
-
 <img align="left" src="./tests/pics/rect_bw_16_show_off.jpg" width="300" />
 <br>
 
