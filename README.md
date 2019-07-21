@@ -5,6 +5,9 @@ Experimental decoder for codes in this style:
   <img src="./tests/pics/rect_bw_16_show_off.jpg" width="400" />
 </p>
 
+# Demo
+![](./gif/notqrcodedecoder.gif)
+
 #### Properties
 * thick bar used to calculate absolute rotation
 * x,y coordinate encoding: 
