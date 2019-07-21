@@ -1,28 +1,44 @@
+// This is free and unencumbered software released into the public domain.
 //
-// Created by julian on 5/25/19.
+// Anyone is free to copy, modify, publish, use, compile, sell, or
+// distribute this software, either in source code form or as a compiled
+// binary, for any purpose, commercial or non-commercial, and by any means.
 //
+// In jurisdictions that recognize copyright laws, the author or authors
+// of this software dedicate any and all copyright interest in the
+// software to the public domain. We make this dedication for the benefit
+// of the public at large and to the detriment of our heirs and
+// successors. We intend this dedication to be an overt act of
+// relinquishment in perpetuity of all present and future rights to this
+// software under copyright law.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
+// For more information, please refer to <http://unlicense.org>
 
 #ifndef NOT_QRCODE_DECODER_HPP
 #define NOT_QRCODE_DECODER_HPP
 
 #include <notqrcode/util.hpp>
-#include <vector>
 
 namespace notqrcode {
 
-/**
- * Draw keypoints/orientation in image with Draw::YES
- */
+/// Draw keypoints/orientation in image with Draw::YES
 enum Draw {
     YES = 0,
     NO,
 };
 
+/// helper
 using SkipEmptyCheck = Draw;
 
-/**
- * Error types for NotQRCodeDecoder
- */
+/// Error types for NotQRCodeDecoder
 enum Error {
     None = 0,
     InvalidKeyPoints,
@@ -30,10 +46,7 @@ enum Error {
     CentroidDetectionError,
 };
 
-/**
- * Result type
- * @tparam T type of result value
- */
+/// rust style Result type
 template <typename T>
 struct Result {
     // Value of calculation
@@ -50,12 +63,10 @@ struct Point {
     T y;
 };
 
+/// helper
 using Point2i = Point<int>;
 
-/**
- * Image Processing Params: adjusts image before
- * decoding takes place
- */
+/// Image Processing Params: adjusts image before decoding takes place
 struct ImgProcessingParams {
     /// size of gaussian filter, e.g. 3 for 3x3 gaussian blur matrix
     int gaussian_size;
@@ -81,14 +92,12 @@ struct ImgProcessingParams {
     float centroid_orientation_ratio;
 };
 
-/**
- * Handles all operations necessary to decode Code (sample seen in README.md)
- */
+/// Class handles decoding of images
 class NotQRCodeDecoder {
 public:
 
     /**
-     * image instance from file of decoder with custom parameters
+     * image instance from file of decoder
      * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder file(std::string filename);
@@ -105,7 +114,7 @@ public:
 
 
     /**
-     * image instance from cv::Mat of decoder with custom parameters
+     * image instance from cv::Mat of decoder
      * @return NotQRCodeDecoder
      */
     static NotQRCodeDecoder img(cv::Mat& img);
@@ -133,23 +142,6 @@ public:
      */
     static NotQRCodeDecoder video_with_params(const ImgProcessingParams &img_proc_params,
                                               const cv::SimpleBlobDetector::Params &blob_params);
-
-    /**
-     * Init with cv::Matrix
-     * @param img: cv::Mat
-     * @param skip: whether or not to skip image empty check (only YES when using video)
-     */
-    explicit NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip);
-
-    /**
-     * Init with cv::Matrix and custom Simpleblobdetector params
-     * @param img: cv::Mat
-     * @param img_proc_params
-     * @param params
-     * @param skip: whether or not to skip image empty check (only YES when using video)
-     */
-    NotQRCodeDecoder(cv::Mat &img, const ImgProcessingParams &img_proc_params,
-                     const cv::SimpleBlobDetector::Params &params, SkipEmptyCheck skip);
 
     /// default constructor deleted
     NotQRCodeDecoder() = delete;
@@ -201,8 +193,8 @@ public:
 
     /**
      * Overloaded operator to load image from cv::VideoCapture into cv::Mat
-     * @param code
-     * @param cap
+     * @param code: decoder Object
+     * @param cap: opencv Video Capure object
      * @return
      */
     friend NotQRCodeDecoder& operator<<(NotQRCodeDecoder& code, cv::VideoCapture& cap);
@@ -225,6 +217,23 @@ public:
     void prep_image_from_video();
 
 private:
+    /**
+     * Init with cv::Matrix
+     * @param img: cv::Mat
+     * @param skip: whether or not to skip image empty check (only YES when using video)
+     */
+    explicit NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip);
+
+    /**
+     * Init with cv::Matrix and custom Simpleblobdetector params
+     * @param img: cv::Mat
+     * @param img_proc_params
+     * @param params
+     * @param skip: whether or not to skip image empty check (only YES when using video)
+     */
+    NotQRCodeDecoder(cv::Mat &img, const ImgProcessingParams &img_proc_params,
+                     const cv::SimpleBlobDetector::Params &params, SkipEmptyCheck skip);
+
     /// opencv image
     cv::Mat& _img;
     /// simple blobdetector

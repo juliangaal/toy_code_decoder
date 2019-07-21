@@ -1,8 +1,8 @@
 # Not QR Code
 Experimental decoder for codes in this style:
 
-<p float="left">
-  <img src="./tests/pics/rect_bw_16_show_off.jpg" width="400" />
+<p float="center">
+  <img src="./tests/pics/rect_bw_16_show_off.jpg" width="300" />
 </p>
 
 #### Properties
@@ -19,8 +19,11 @@ Experimental decoder for codes in this style:
 * OpenCV 3.0
 * [fmt](https://github.com/fmtlib/fmt) (for tests, examples)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)
+* cmake 3.1+ must be installed
 
-![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode.svg) for ubuntu 16.04, clone this repo and run the [installation script](./install.sh) with `bash scripts/install.sh` to install all necessary components, if they aren't on your system
+![CircleCI](https://img.shields.io/circleci/build/github/juliangaal/notqrcode/ref.svg?style=flat-square) with ubuntu 18.04 and
+clang 7, 8 and g++ 7 - 9. Any c++14 compatible compiler should work.
+
 
 #### Install
 ```bash

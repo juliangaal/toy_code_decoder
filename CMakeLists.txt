@@ -80,6 +80,9 @@ endif()
 add_custom_target(doc)
 add_custom_command(TARGET doc
                    COMMAND cd ${PROJECT_SOURCE_DIR}/docs && doxygen Doxyfile)
+add_custom_target(read_docs)
+add_custom_command(TARGET read_docs
+        COMMAND cd ${PROJECT_SOURCE_DIR}/docs/doc/html && xdg-open index.html)
 
 # install
 install(TARGETS notqrcode

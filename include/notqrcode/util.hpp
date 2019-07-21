@@ -1,6 +1,26 @@
+// This is free and unencumbered software released into the public domain.
 //
-// Created by julian on 5/24/19.
+// Anyone is free to copy, modify, publish, use, compile, sell, or
+// distribute this software, either in source code form or as a compiled
+// binary, for any purpose, commercial or non-commercial, and by any means.
 //
+// In jurisdictions that recognize copyright laws, the author or authors
+// of this software dedicate any and all copyright interest in the
+// software to the public domain. We make this dedication for the benefit
+// of the public at large and to the detriment of our heirs and
+// successors. We intend this dedication to be an overt act of
+// relinquishment in perpetuity of all present and future rights to this
+// software under copyright law.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
+// For more information, please refer to <http://unlicense.org>
 
 #ifndef NOTQRCODE_UTIL_HPP
 #define NOTQRCODE_UTIL_HPP
@@ -28,14 +48,18 @@ constexpr static float PIf = static_cast<float>(M_PI);
 int decode(std::vector<cv::KeyPoint>::const_iterator begin,
            std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
 
+/**
+ * Performs std::stable_partition by separating keypoints according to height
+ * @param begin: begin of keypoints vector
+ * @param end: end of keypoints vector
+ * @param height: height to separate with
+ * @return iterator of std::stable_partition
+ */
 std::vector<cv::KeyPoint>::iterator partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end, float height);
 
 namespace units {
 
-/**
- * Helper class to avoid calculation errors between degrees and radians
- * Used for more explicit function parameters, e.g. notqrcode::rotate_keypoints
- */
+/// Helper class to avoid calculation errors between degrees and radians
 class Degrees {
 public:
     /// constructor
@@ -116,17 +140,6 @@ float norm(const cv::Point2f &point);
 float euc_dist(const cv::Point2f a, const cv::Point2f b);
 
 } // namespace notqrcode::util::calc
-
-namespace python {
-    /**
-     * Converts int to cv::ImreadModes for python wrapper
-     * @param mode: cv::ImreadModes as int
-     * @return
-     */
-    cv::ImreadModes int_to_imread_mode(int mode) noexcept;
-
-} // namespace notqrcode::util::python
-
 } // namespace notqrcode::util
 } // namespace notqrcode
 
