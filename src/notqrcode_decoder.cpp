@@ -11,7 +11,7 @@ using namespace notqrcode;
 namespace notqrcode {
     NotQRCodeDecoder &operator<<(NotQRCodeDecoder &code, cv::VideoCapture &cap) {
         cap >> code._img;
-        code.prep_image();
+        code.prep_image_from_video();
         code._keypoints.clear();
         code._orientation_point = cv::KeyPoint{};
         code._avg_size = 0.0f;
@@ -20,22 +20,28 @@ namespace notqrcode {
 }
 
 NotQRCodeDecoder NotQRCodeDecoder::file(std::string filename) {
-    static cv::Mat img = cv::imread(filename);
+    static cv::Mat img = cv::imread(filename, cv::IMREAD_GRAYSCALE);
     return NotQRCodeDecoder(img, NO);
 }
 
 NotQRCodeDecoder NotQRCodeDecoder::file_with_params(std::string filename, const ImgProcessingParams &img_proc_params,
                                                     const cv::SimpleBlobDetector::Params &blob_params) {
-    static cv::Mat img = cv::imread(filename);
+    static cv::Mat img = cv::imread(filename, cv::IMREAD_GRAYSCALE);
     return NotQRCodeDecoder(img, img_proc_params, blob_params, NO);
 }
 
 NotQRCodeDecoder NotQRCodeDecoder::img(cv::Mat &img) {
+    if (img.channels() != 1)
+        throw std::runtime_error("Image must be read as GrayScale with imread(file, cv::IMREAD_GRAYSCALE)");
+
     return NotQRCodeDecoder(img, NO);
 }
 
 NotQRCodeDecoder NotQRCodeDecoder::img_with_params(cv::Mat &img, const ImgProcessingParams &img_proc_params,
                                                    const cv::SimpleBlobDetector::Params &blob_params) {
+    if (img.channels() != 1)
+        throw std::runtime_error("Image must be read as GrayScale with imread(file, cv::IMREAD_GRAYSCALE)");
+
     return NotQRCodeDecoder(img, img_proc_params, blob_params, NO);
 }
 
@@ -81,6 +87,8 @@ NotQRCodeDecoder::NotQRCodeDecoder(cv::Mat &img, SkipEmptyCheck skip) :
     _img_proc_params.gaussian_size = 3;
     _img_proc_params.threshold = 245;
     _img_proc_params.threshold_repl_value = 255;
+    _img_proc_params.centroid_dist_margin = 1.5f;
+    _img_proc_params.orientation_pt_dist_margin = 1.5f;
 
     _keypoints.reserve(10);
 
@@ -232,12 +240,14 @@ Result<Point2i> NotQRCodeDecoder::decode() {
 //    std::cout << util::calc::euc_dist(x_centroid, y_centroid) << " vs " << util::calc::euc_dist(x_centroid, _orientation_point.pt) << " vs "<< util::calc::euc_dist(y_centroid, _orientation_point.pt) << "\n";
     float dist_centroid_x_orientation_pt = util::calc::euc_dist(x_centroid, _orientation_point.pt);
     float dist_centroid_y_orientation_pt = util::calc::euc_dist(y_centroid, _orientation_point.pt);
-    bool same_dist_to_orientation_pt = std::abs(dist_centroid_x_orientation_pt - dist_centroid_y_orientation_pt) < 2.5f;
+    bool same_dist_to_orientation_pt =
+            std::abs(dist_centroid_x_orientation_pt - dist_centroid_y_orientation_pt) <
+            _img_proc_params.orientation_pt_dist_margin;
 
     float dist_centroids = util::calc::euc_dist(x_centroid, y_centroid);
     bool correct_centroid_distance =
             std::abs((0.75 * (dist_centroid_x_orientation_pt + dist_centroid_y_orientation_pt)/2.f) -
-            dist_centroids) < 2.5f;
+            dist_centroids) < _img_proc_params.centroid_dist_margin;
 
     if (not same_dist_to_orientation_pt or not correct_centroid_distance) {
         return Result<Point2i>{Point2i{}, Error::CentroidDetectionError};
@@ -285,7 +295,11 @@ void NotQRCodeDecoder::open_img(std::string name) {
 }
 
 void NotQRCodeDecoder::prep_image() {
-    cv::cvtColor(_img, _img, cv::COLOR_BGR2GRAY);
     cv::GaussianBlur(_img, _img, cv::Size(_img_proc_params.gaussian_size, _img_proc_params.gaussian_size), 0);
     cv::threshold(_img, _img, _img_proc_params.threshold, _img_proc_params.threshold_repl_value, cv::THRESH_BINARY | cv::THRESH_OTSU);
+}
+
+void NotQRCodeDecoder::prep_image_from_video() {
+    cv::cvtColor(_img, _img, cv::COLOR_BGR2GRAY);
+    prep_image();
 }

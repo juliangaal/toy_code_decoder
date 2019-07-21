@@ -1,20 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
-project(NotQRCode VERSION 0.1)
+project(NotQRCode VERSION 0.2)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(OpenCV 4.0)
-if(NOT OpenCV)
-else()
-    find_package(OpenCV 3.0 REQUIRED)
-endif()
-find_package(Git REQUIRED)
+find_package(OpenCV 3.0)
 
 option(COMPILE_TEST "Compiles Tests" OFF)
 option(ENABLE_AUTO_TEST "Enables Tests Post build" OFF)
-option(GIT_SUBMODULE "Check submodules during build" ON)
 
 set(LIB notqrcode)
 
@@ -36,16 +30,17 @@ if(COMPILE_TEST)
     find_package(fmt REQUIRED)
     enable_testing()
 
-    add_executable(unit_test tests/test.cpp)
+    add_executable(unit_test tests/unit_test.cpp)
     add_test(NAME unit_test COMMAND unit_test)
     target_include_directories(unit_test PRIVATE include)
     target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_link_libraries(unit_test PRIVATE ${OpenCV_LIBS} Catch2::Catch2 notqrcode)
+    target_link_libraries(unit_test PRIVATE ${OpenCV_LIBS} Catch2::Catch2 notqrcode fmt::fmt)
 
-    add_executable(file tests/file.cpp)
-    target_include_directories(file PRIVATE include)
-    target_compile_options(file PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(file PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
+    add_executable(integration_test tests/integration_test.cpp)
+    add_test(NAME integration_test COMMAND integration_test)
+    target_include_directories(integration_test PRIVATE include)
+    target_compile_options(integration_test PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
+    target_link_libraries(integration_test PRIVATE ${OpenCV_LIBS} Catch2::Catch2 notqrcode fmt::fmt)
 
     add_executable(video tests/video.cpp)
     target_include_directories(video PRIVATE include)

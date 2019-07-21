@@ -13,7 +13,7 @@ Experimental decoder for codes in this style:
 * e.g. the picture above will decode to orientation: 0, coordinate: (165, 165)
 
 #### Dependencies
-* OpenCV 3.0
+* OpenCV 3.0+
 * `python(3)-dev` (for python bindings)
 * [fmt](https://github.com/fmtlib/fmt) (for tests)
 * [Catch](https://github.com/catchorg/Catch2) (for tests)

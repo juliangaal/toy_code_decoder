@@ -53,9 +53,11 @@ struct Point {
 using Point2i = Point<int>;
 
 struct ImgProcessingParams {
-    size_t gaussian_size;
-    size_t threshold;
-    size_t threshold_repl_value;
+    int gaussian_size;
+    int threshold;
+    int threshold_repl_value;
+    float centroid_dist_margin;
+    float orientation_pt_dist_margin;
 };
 
 /**
@@ -191,6 +193,12 @@ public:
      * Prepare image for detecting: Apply gaussian blur, threshold and convert to grayscale
      */
     void prep_image();
+
+    /**
+     * Prepare image (from video, must be converted to Grayscale) for detecting:
+     * Apply gaussian blur, threshold and convert to grayscale
+    */
+    void prep_image_from_video();
 
 private:
     /// opencv image

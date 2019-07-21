@@ -25,7 +25,7 @@ int main(void) {
 
     // blob detection parameters
     // Change thresholds
-    cv::SimpleBlobDetector::Params blob_params;
+    cv::SimpleBlobDetector::Params blob_params{};
     blob_params.minThreshold = 30;
     blob_params.maxThreshold = 200;
 
@@ -49,10 +49,12 @@ int main(void) {
     blob_params.filterByInertia = true;
     blob_params.minInertiaRatio = 0.01;
 
-    notqrcode::ImgProcessingParams img_params;
+    notqrcode::ImgProcessingParams img_params{};
     img_params.gaussian_size = 5;
     img_params.threshold = 245;
     img_params.threshold_repl_value = 255;
+    img_params.centroid_dist_margin = 1.5f;
+    img_params.orientation_pt_dist_margin = 1.5f;
 
     auto decoder = NotQRCodeDecoder::video_with_params(img_params, blob_params);
 
