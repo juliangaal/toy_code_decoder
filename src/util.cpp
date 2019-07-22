@@ -54,13 +54,13 @@ float calc::euc_dist(const cv::Point2f a, const cv::Point2f b) {
 }
 
 int notqrcode::util::decode(std::vector<cv::KeyPoint>::const_iterator begin,
-                            std::vector<cv::KeyPoint>::const_iterator end, float avg_size) {
+                            std::vector<cv::KeyPoint>::const_iterator end, float size) {
     int val = 0;
     int bit = 0;
 
     for (auto it = begin; it != end; it++) {
         int exp = std::distance(it, end) - 1u;
-        bit = ((*it).size < avg_size) ? 0 : 1;
+        bit = ((*it).size < size) ? 0 : 1;
         val += bit * std::pow(2, exp);
     }
 

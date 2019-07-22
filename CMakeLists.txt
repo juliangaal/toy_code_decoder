@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(NotQRCode VERSION 0.2)
+project(NotQRCode VERSION 0.3)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,44 +24,8 @@ target_include_directories(${LIB} PUBLIC
                            $<INSTALL_INTERFACE:include>)
 target_link_libraries(${LIB} PUBLIC ${OpenCV_LIBS})
 
-# enable tests compilation when COMPILE_TEST=ON
-message(STATUS "COMPILE_TESTS set to ${COMPILE_TESTS}")
-if(COMPILE_TESTS)
-    find_package(Catch2 REQUIRED)
-    find_package(fmt REQUIRED)
-    enable_testing()
-
-    add_executable(unit_test tests/unit_test.cpp)
-    add_test(NAME unit_test COMMAND unit_test)
-    target_include_directories(unit_test PRIVATE include)
-    target_compile_options(unit_test PRIVATE -Wall -Wextra -pedantic -Werror)
-    target_link_libraries(unit_test PRIVATE ${OpenCV_LIBS} Catch2::Catch2 notqrcode fmt::fmt)
-
-    add_executable(integration_test tests/integration_test.cpp)
-    add_test(NAME integration_test COMMAND integration_test)
-    target_include_directories(integration_test PRIVATE include)
-    target_compile_options(integration_test PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(integration_test PRIVATE ${OpenCV_LIBS} Catch2::Catch2 notqrcode fmt::fmt)
-endif()
-
-if(COMPILE_TESTS)
-    find_package(fmt REQUIRED)
-
-    add_executable(video examples/video.cpp)
-    target_include_directories(video PRIVATE include)
-    target_compile_options(video PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(video PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
-
-    add_executable(file examples/file.cpp)
-    target_include_directories(file PRIVATE include)
-    target_compile_options(file PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(file PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
-
-    add_executable(img examples/img.cpp)
-    target_include_directories(img PRIVATE include)
-    target_compile_options(img PRIVATE -Wall -Wextra -Weffc++ -pedantic -Werror)
-    target_link_libraries(img PRIVATE ${OpenCV_LIBS} fmt::fmt notqrcode)
-endif()
+add_subdirectory(tests)
+add_subdirectory(examples)
 
 message(STATUS "COMPILE_EXAMPLES set to ${COMPILE_EXAMPLES}")
 
@@ -101,7 +65,7 @@ install(FILES ${HEADERS} DESTINATION include/notqrcode)
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
                                  VERSION ${${PROJECT_NAME}_VERSION}
-                                 COMPATIBILITY SameMinorVersion)
+				 COMPATIBILITY ExactVersion)
 
 install(FILES "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"

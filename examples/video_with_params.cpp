@@ -43,9 +43,42 @@ int main(void) {
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, 240);
     cap.set(cv::CAP_PROP_FPS, frame_rate);
 
+    // blob detection parameters
+    // Change thresholds
+    cv::SimpleBlobDetector::Params blob_params{};
+    blob_params.minThreshold = 30;
+    blob_params.maxThreshold = 200;
+
+    // Filter by Area.
+    blob_params.filterByArea = true;
+    blob_params.minArea = 3.14159 * 10.0f * 10.0f; // Min 10.0f diameter
+    blob_params.maxArea = 3.14159 * 50.0f * 50.0f; // Max 30.0f diameter
+
+    // filter by color: only black
+    blob_params.filterByColor = true;
+    blob_params.blobColor = 0;
+
+    // Filter by Circularity
+    blob_params.filterByCircularity = false;
+
+    // Filter by Convexity
+    blob_params.filterByConvexity = true;
+    blob_params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    blob_params.filterByInertia = true;
+    blob_params.minInertiaRatio = 0.01;
+
+    notqrcode::ImgProcessingParams img_params{};
+    img_params.gaussian_size = 5;
+    img_params.threshold = 245;
+    img_params.threshold_repl_value = 255;
+    img_params.centroid_dist_margin = 2.5f;
+    img_params.orientation_pt_dist_margin = 2.5f;
+    img_params.centroid_orientation_ratio = 0.74f;
 
     // parameters are optional, tune for your widht, height etc...
-    auto decoder = NotQRCodeDecoder::video();
+    auto decoder = NotQRCodeDecoder::video_with_params(img_params, blob_params);
 
     for(;;) {
         decoder << cap;

@@ -31,7 +31,7 @@ using namespace notqrcode;
 using notqrcode::util::units::Degrees;
 
 TEST_CASE("Integration Test") {
-    // blob detection parameters SPECIFICALLY for files in ../tests/pics
+    // blob detection parameters SPECIFICALLY for files in ../../tests/pics
     // Change thresholds
     cv::SimpleBlobDetector::Params blob_params{};
     blob_params.minThreshold = 10;
@@ -62,7 +62,7 @@ TEST_CASE("Integration Test") {
     img_params.centroid_orientation_ratio = 0.75f;
 
     {
-        auto img = cv::imread("../tests/pics/rect_bw_16_neg90_xlarge.jpg", cv::IMREAD_GRAYSCALE);
+        auto img = cv::imread("../../tests/pics/rect_bw_16_neg90_xlarge.jpg", cv::IMREAD_GRAYSCALE);
         auto decoder = NotQRCodeDecoder::img_with_params(img, img_params, blob_params);
         decoder.calculate_keypoints(Draw::YES);
         decoder.save_img("neg_90_test.jpg");
@@ -84,7 +84,7 @@ TEST_CASE("Integration Test") {
     }
 
     {
-        auto img = cv::imread("../tests/pics/rect_bw_16_90_xlarge.jpg", cv::IMREAD_GRAYSCALE);
+        auto img = cv::imread("../../tests/pics/rect_bw_16_90_xlarge.jpg", cv::IMREAD_GRAYSCALE);
         auto decoder = NotQRCodeDecoder::img_with_params(img, img_params, blob_params);
         decoder.calculate_keypoints(Draw::YES);
         decoder.save_img("90_test.jpg");
@@ -105,7 +105,7 @@ TEST_CASE("Integration Test") {
     }
 
     {
-        auto img = cv::imread("../tests/pics/rect_bw_16_neg45_xlarge.jpg", cv::IMREAD_GRAYSCALE);
+        auto img = cv::imread("../../tests/pics/rect_bw_16_neg45_xlarge.jpg", cv::IMREAD_GRAYSCALE);
         auto decoder = NotQRCodeDecoder::img_with_params(img, img_params, blob_params);
         decoder.calculate_keypoints(Draw::YES);
         decoder.save_img("neg45_test.jpg");
@@ -126,7 +126,7 @@ TEST_CASE("Integration Test") {
     }
 
     {
-        auto img = cv::imread("../tests/pics/rect_bw_16_135_xlarge.jpg", cv::IMREAD_GRAYSCALE);
+        auto img = cv::imread("../../tests/pics/rect_bw_16_135_xlarge.jpg", cv::IMREAD_GRAYSCALE);
         auto decoder = NotQRCodeDecoder::img_with_params(img, img_params, blob_params);
         decoder.calculate_keypoints(Draw::YES);
         decoder.save_img("135_test.jpg");
@@ -147,7 +147,7 @@ TEST_CASE("Integration Test") {
     }
 
     {
-        auto img = cv::imread("../tests/pics/rect_bw_16_0_xlarge.jpg", cv::IMREAD_GRAYSCALE);
+        auto img = cv::imread("../../tests/pics/rect_bw_16_0_xlarge.jpg", cv::IMREAD_GRAYSCALE);
         auto decoder = NotQRCodeDecoder::img_with_params(img, img_params, blob_params);
         decoder.calculate_keypoints(Draw::YES);
         decoder.save_img("0_test.jpg");
@@ -168,7 +168,7 @@ TEST_CASE("Integration Test") {
     }
 
     {
-        auto img = cv::imread("../tests/pics/rect_bw_16_neg135_xlarge.jpg", cv::IMREAD_GRAYSCALE);
+        auto img = cv::imread("../../tests/pics/rect_bw_16_neg135_xlarge.jpg", cv::IMREAD_GRAYSCALE);
         auto decoder = NotQRCodeDecoder::img_with_params(img, img_params, blob_params);
         decoder.calculate_keypoints(Draw::YES);
         decoder.save_img("neg135_test.jpg");

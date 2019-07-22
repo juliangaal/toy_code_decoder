@@ -78,6 +78,6 @@ TEST_CASE("Various") {
 }
 
 TEST_CASE("Constructor/Factory tests") {
-    cv::Mat img = cv::imread("../tests/pics/rect_bw_16_0_xlarge.jpg");
+    cv::Mat img = cv::imread("../../tests/pics/rect_bw_16_0_xlarge.jpg");
     REQUIRE_THROWS(notqrcode::NotQRCodeDecoder::img(img));
 }

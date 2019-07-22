@@ -43,7 +43,8 @@ enum Error {
     None = 0,
     InvalidKeyPoints,
     SeparationError,
-    CentroidDetectionError,
+    CentroidDistanceError,
+    CentroidOrientationPointDistanceError,
 };
 
 /// rust style Result type
@@ -242,10 +243,8 @@ private:
     ImgProcessingParams _img_proc_params;
     /// vector to save keypoints
     std::vector<cv::KeyPoint> _keypoints;
-    /// cv::Keypoint to save orientation point
-    cv::KeyPoint _orientation_point;
-    /// avg_size used to calculate avg size of all detected rectangles
-    float _avg_size;
+    /// cv::Keypoint to save orientation point, used for decoding, debugging
+    cv::KeyPoint _orientation_blob;
 };
 
 }

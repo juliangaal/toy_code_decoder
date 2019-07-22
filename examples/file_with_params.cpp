@@ -33,9 +33,43 @@ int main(int argc, char* argv[]) {
     if (argc != 2)
 	throw std::runtime_error("No file name argument");
 
+    // set simple blob detector params
+    // Change thresholds
+    cv::SimpleBlobDetector::Params blob_params{};
+    blob_params.minThreshold = 30;
+    blob_params.maxThreshold = 200;
+
+    // Filter by Area.
+    blob_params.filterByArea = true;
+    blob_params.minArea = 3.14159 * 10.0f * 10.0f; // Min 10.0f diameter
+    blob_params.maxArea = 3.14159 * 50.0f * 50.0f; // Max 30.0f diameter
+
+    // filter by color: only black
+    blob_params.filterByColor = true;
+    blob_params.blobColor = 0;
+
+    // Filter by Circularity
+    blob_params.filterByCircularity = false;
+
+    // Filter by Convexity
+    blob_params.filterByConvexity = true;
+    blob_params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    blob_params.filterByInertia = true;
+    blob_params.minInertiaRatio = 0.01;
+
+    notqrcode::ImgProcessingParams img_params{};
+    img_params.gaussian_size = 5;
+    img_params.threshold = 245;
+    img_params.threshold_repl_value = 255;
+    img_params.centroid_dist_margin = 1.5f;
+    img_params.orientation_pt_dist_margin = 3.5f;
+    img_params.centroid_orientation_ratio = 0.74f;
+
     std::string filename(argv[1]);
     // default params, for custom use NotQRCodeDecoder::file_with_params
-    auto decoder = NotQRCodeDecoder::file(filename);
+    auto decoder = NotQRCodeDecoder::file_with_params(filename, img_params, blob_params);
     decoder.calculate_keypoints(Draw::YES);
     decoder.save_img("file_test.jpg");
 

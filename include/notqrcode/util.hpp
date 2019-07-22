@@ -40,13 +40,15 @@ constexpr T to(const S &&val) {
 /// float version of M_PI
 constexpr static float PIf = static_cast<float>(M_PI);
 
-/*
- * decode translates vector of keypoints with differing sizes in binary notation to a number
- * objects bigger than avg_size are treated as 1s
- * objects smaller than avg_size are treated as 0s
+/**
+ * decode translates vector of keypoints with differing sizes in binary notation to a numbe
+ * @param begin: begin of keypoints vector
+ * @param end: end of keypoints vector
+ * @param size: objects bigger than size are treated as 1s, objects smaller than size are treated as 0s
+ * @return
  */
 int decode(std::vector<cv::KeyPoint>::const_iterator begin,
-           std::vector<cv::KeyPoint>::const_iterator end, float avg_size);
+           std::vector<cv::KeyPoint>::const_iterator end, float size);
 
 /**
  * Performs std::stable_partition by separating keypoints according to height
@@ -55,7 +57,8 @@ int decode(std::vector<cv::KeyPoint>::const_iterator begin,
  * @param height: height to separate with
  * @return iterator of std::stable_partition
  */
-std::vector<cv::KeyPoint>::iterator partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end, float height);
+std::vector<cv::KeyPoint>::iterator
+partition_by_height(std::vector<cv::KeyPoint>::iterator begin, std::vector<cv::KeyPoint>::iterator end, float height);
 
 namespace units {
 

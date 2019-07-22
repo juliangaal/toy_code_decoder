@@ -23,33 +23,62 @@
 // For more information, please refer to <http://unlicense.org>
 
 #include <notqrcode/notqrcode_decoder.hpp>
+#include <opencv2/opencv.hpp>
 #include <fmt/format.h>
-#include <cassert>
 
 using namespace notqrcode;
 using notqrcode::util::units::Degrees;
 
-int main(int argc, char* argv[]) {
-    if (argc != 2)
-	throw std::runtime_error("No file name argument");
+int main() {
+    // set simple blob detector params
+    // Change thresholds
+    cv::SimpleBlobDetector::Params blob_params{};
+    blob_params.minThreshold = 30;
+    blob_params.maxThreshold = 200;
 
-    std::string filename(argv[1]);
-    // default params, for custom use NotQRCodeDecoder::file_with_params
-    auto decoder = NotQRCodeDecoder::file(filename);
+    // Filter by Area.
+    blob_params.filterByArea = true;
+    blob_params.minArea = 3.14159 * 10.0f * 10.0f; // Min 10.0f diameter
+    blob_params.maxArea = 3.14159 * 50.0f * 50.0f; // Max 30.0f diameter
+
+    // filter by color: only black
+    blob_params.filterByColor = true;
+    blob_params.blobColor = 0;
+
+    // Filter by Circularity
+    blob_params.filterByCircularity = false;
+
+    // Filter by Convexity
+    blob_params.filterByConvexity = true;
+    blob_params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    blob_params.filterByInertia = true;
+    blob_params.minInertiaRatio = 0.01;
+
+    notqrcode::ImgProcessingParams img_params{};
+    img_params.gaussian_size = 5;
+    img_params.threshold = 245;
+    img_params.threshold_repl_value = 255;
+    img_params.centroid_dist_margin = 1.5f;
+    img_params.orientation_pt_dist_margin = 3.5f;
+    img_params.centroid_orientation_ratio = 0.74f;
+
+    cv::Mat img = cv::imread("../tests/pics/rect_bw_16_90_xlarge.jpg", cv::IMREAD_GRAYSCALE);
+    // default params, for custom use NotQRCodeDecoder::img_with_params
+    auto decoder = NotQRCodeDecoder::img_with_params(img, img_params, blob_params);
     decoder.calculate_keypoints(Draw::YES);
-    decoder.save_img("file_test.jpg");
-
 
     auto orientation = decoder.calculate_orientation();
     if (orientation.error != Error::None) {
-        fmt::print("Orientation Error: {}\n", orientation.error);
+        fmt::print("Error: {}", orientation.error);
         return -1;
     }
 
     decoder.rotate_keypoints(util::units::Degrees(orientation.val));
     auto decoded_point = decoder.decode();
     if (decoded_point.error != Error::None) {
-        fmt::print("Decoder Error: {}\n", decoded_point.error);
+        fmt::print("Error: {}", decoded_point.error);
         return -1;
     }
 
