@@ -3,4 +3,5 @@
 .idea/
 *build*/
 *.so
+*test*.jpg
 doc/

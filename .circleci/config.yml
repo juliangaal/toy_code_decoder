@@ -1,16 +1,43 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
-      - image: ubuntu:16.04
+      - image: jgaal/devenv:bionic
     steps:
       - checkout
-      - run: 
-          name: Docker shit
-          command: | 
-            apt-get update -y
-            apt-get install -y sudo
-            apt-get install -y software-properties-common
-      - run: 
-          name: Run Installation script
-          command: bash scripts/install.sh
+      - run: mkdir build
+      - run:
+          name: cmake 3.14.0 g++-9
+          command: |
+            cd build
+            $CMAKE_LATEST -DCMAKE_BUILD_TYPE=Release -D CMAKE_CXX_COMPILER=/usr/bin/g++-9 -D COMPILE_TESTS=ON ..
+            make -j8 && cd tests && ctest --verbose
+            rm -rf *
+      - run:
+          name: cmake 3.14.0 g++-8
+          command: |
+            cd build
+            $CMAKE_LATEST -DCMAKE_BUILD_TYPE=Release -D CMAKE_CXX_COMPILER=/usr/bin/g++-8 -D COMPILE_TESTS=ON ..
+            make -j8 && cd tests && ctest --verbose
+            rm -rf *
+      - run:
+          name: cmake 3.14.0 g++-7
+          command: |
+            cd build
+            $CMAKE_LATEST -DCMAKE_BUILD_TYPE=Release -D CMAKE_CXX_COMPILER=/usr/bin/g++-7 -D COMPILE_TESTS=ON ..
+            make -j8 && cd tests && ctest --verbose
+            rm -rf *
+      - run:
+          name: cmake 3.14.0 clang++-8
+          command: |
+            cd build
+            $CMAKE_LATEST -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/bin/clang++-8 -D COMPILE_TESTS=ON ..
+            make -j8 && cd tests && ctest --verbose
+            rm -rf *
+      - run:
+          name: cmake 3.14.0 clang++-7
+          command: |
+            cd build
+            $CMAKE_LATEST -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/bin/clang++-7 -D COMPILE_TESTS=ON ..
+            make -j8 && cd tests && ctest --verbose
+            rm -rf *
